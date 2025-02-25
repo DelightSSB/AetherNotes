@@ -52,7 +52,6 @@ function UploadButton() {
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Hello World!</Text>
       <UploadButton />
       <StatusBar style="auto" />
     </View>
