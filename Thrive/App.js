@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, ScrollView, TextInput} from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 
@@ -53,9 +53,55 @@ function UploadButton() {
 export default function App() {
   return (
     <View style={styles.container}>
-      <Image source={logo} style={styles.logo} />
-      <UploadButton />
-      <StatusBar style="auto" />
+      {/* Sidebar */}
+      <View style={styles.sidebar}>
+        <Text style={styles.sidebarTitle}>History</Text>
+        <FlatList
+          data={[
+            { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
+            { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
+            { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
+            { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
+            { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
+            { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
+            { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
+            { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
+            { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
+            { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
+            { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
+            { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
+            { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
+            { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
+            { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
+            { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
+            { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
+            { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
+            { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
+            { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
+            { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
+            { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
+            { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
+            { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
+          ]}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.historyItem}>
+              <Text style={styles.historyText}>{item.title}</Text>
+              <Text style={styles.historyDate}>{item.date}</Text>
+            </View>
+          )}
+        />
+      </View>
+
+      {/* Main Content */}
+      <View style={styles.mainContent}>
+        <View style={styles.logoContainer}>
+          <Image source={logo} style={styles.logo} />
+        </View>
+        <Text style={styles.fileTypesText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
+        <UploadButton />
+        <StatusBar style="auto" />
+      </View>
     </View>
   );
 }
@@ -63,35 +109,71 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: 'row', // Sidebar + Main Content
     backgroundColor: '#fff',
+  },
+  sidebar: {
+    width: 250,
+    backgroundColor: '#f4f4f4',
+    padding: 15,
+    borderRightWidth: 1,
+    borderRightColor: '#ccc',
+  },
+  sidebarTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  historyItem: {
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  historyText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  historyDate: {
+    fontSize: 12,
+    color: '#666',
+  },
+  mainContent: {
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     paddingTop: 50,
     paddingBottom: 20,
+  },
+  logoContainer: {
+    position: 'absolute',
+    top: 10,
+    alignItems: 'center',
+    width: '100%',
   },
   logo: {
     width: 200,
     height: 80,
     resizeMode: 'contain',
-    marginBottom: 20,
   },
-  uploadButton:{
-    position: 'absolute',
-    bottom: 30,
-    left: "50%",
-    transform: [{ translateX: -75 }],
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#000",
-    borderRadius: 5, 
+  fileTypesText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#555',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  uploadButton: {
+    marginTop: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    backgroundColor: '#000',
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  uploadButtonText:{
-    color: "#000",
-    fontSize: 12,
-    fontWeight: "bold",
+  uploadButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
