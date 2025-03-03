@@ -1,18 +1,17 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, ScrollView, TextInput} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 
 const logo = require('./assets/thrivelogo.png');
-
-//const fileUpload = require("./components/fileUpload")
+const menuIcon = require('./assets/menu-icon.png'); // Your menu icon file
 
 function UploadButton() {
   const [fileInfo, setFileInfo] = useState(null);
   const handleFileUpload = async () => {
     try {
-      // Step 1: Pick a file
       const doc = await DocumentPicker.getDocumentAsync({
         type: ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'],
       });
@@ -20,9 +19,7 @@ function UploadButton() {
       if (doc.type === 'cancel') {
         return;
       }
-      console.log(doc)
 
-      // For uploading files
       const file = doc.assets[0];
       const uploadDoc = {
         title: file.name,
@@ -31,9 +28,8 @@ function UploadButton() {
         participants: "TestParticipants",
         date: new Date(),
         notes: file,
-        };
+      };
 
-      // Step 4: Send the document to the backend
       await axios.post("http://localhost:3000/upload", uploadDoc);
 
       setFileInfo(uploadDoc);
@@ -43,6 +39,7 @@ function UploadButton() {
       alert('Failed to upload the file.');
     }
   };
+
   return (
     <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
       <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
@@ -51,50 +48,50 @@ function UploadButton() {
 }
 
 export default function App() {
+  const [sidebarVisible, setSidebarVisible] = useState(true); // State to track sidebar visibility
+
+  const toggleSidebar = () => {
+    setSidebarVisible(!sidebarVisible);
+  };
+
   return (
     <View style={styles.container}>
       {/* Sidebar */}
-      <View style={styles.sidebar}>
-        <Text style={styles.sidebarTitle}>History</Text>
-        <FlatList
-          data={[
-            { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
-            { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
-            { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
-            { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
-            { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
-            { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
-            { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
-            { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
-            { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
-            { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
-            { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
-            { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
-            { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
-            { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
-            { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
-            { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
-            { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
-            { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
-            { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
-            { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
-            { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
-            { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
-            { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
-            { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
-          ]}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.historyItem}>
-              <Text style={styles.historyText}>{item.title}</Text>
-              <Text style={styles.historyDate}>{item.date}</Text>
-            </View>
-          )}
-        />
-      </View>
+      {sidebarVisible && (
+        <View style={styles.sidebar}>
+          <Text style={styles.sidebarTitle}>History</Text>
+          <FlatList
+            data={[
+              { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
+              { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
+              { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
+              { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
+              { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
+              { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
+              { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
+              { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
+              { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
+              { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
+              { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
+              { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
+            ]}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.historyItem}>
+                <Text style={styles.historyText}>{item.title}</Text>
+                <Text style={styles.historyDate}>{item.date}</Text>
+              </View>
+            )}
+          />
+        </View>
+      )}
 
       {/* Main Content */}
       <View style={styles.mainContent}>
+        <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
+          <Image source={menuIcon} style={styles.menuIcon} />
+        </TouchableOpacity>
+        
         <View style={styles.logoContainer}>
           <Image source={logo} style={styles.logo} />
         </View>
@@ -109,12 +106,12 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'row', // Sidebar + Main Content
-    backgroundColor: '#fff',
+    flexDirection: 'row', // sidebar + main container
+    backgroundColor: 'rgb(220, 244, 255)', 
   },
   sidebar: {
     width: 250,
-    backgroundColor: '#f4f4f4',
+    backgroundColor: 'rgba(244, 244, 244, 0.7)',
     padding: 15,
     borderRightWidth: 1,
     borderRightColor: '#ccc',
@@ -175,5 +172,16 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  menuButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    zIndex: 1000,
+  },
+  menuIcon: {
+    width: 30,
+    height: 30,
+    resizeMode: 'contain',
   },
 });
