@@ -1,12 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, TextInput } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 
 const logo = require('./assets/thrivelogo.png');
 const menuIcon = require('./assets/menu-icon.png'); // Your menu icon file
+const sendIcon = require('./assets/send.png'); // Your send icon file
 
 function UploadButton() {
   const [fileInfo, setFileInfo] = useState(null);
@@ -49,9 +50,14 @@ function UploadButton() {
 
 export default function App() {
   const [sidebarVisible, setSidebarVisible] = useState(true); // State to track sidebar visibility
+  const [textInput, setTextInput] = useState(''); // State to track text input value
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
+  };
+
+  const handleTextChange = (text) => {
+    setTextInput(text);
   };
 
   return (
@@ -95,8 +101,26 @@ export default function App() {
         <View style={styles.logoContainer}>
           <Image source={logo} style={styles.logo} />
         </View>
+
+        {/* Centered text */}
         <Text style={styles.fileTypesText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
+
+        {/* Upload Button centered */}
         <UploadButton />
+
+        {/* Text Input and Send Icon */}
+        <View style={styles.textInputContainer}>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Enter some text here"
+            value={textInput}
+            onChangeText={handleTextChange}
+          />
+          <TouchableOpacity style={styles.sendIconContainer}>
+            <Image source={sendIcon} style={styles.sendIcon} />
+          </TouchableOpacity>
+        </View>
+
         <StatusBar style="auto" />
       </View>
     </View>
@@ -136,16 +160,14 @@ const styles = StyleSheet.create({
   },
   mainContent: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 50,
-    paddingBottom: 20,
+    justifyContent: 'center', // Center elements vertically
+    alignItems: 'center', // Center elements horizontally
+    paddingBottom: 20, // Space for text input at the bottom
+    position: 'relative', // To allow positioning of the text input container
   },
   logoContainer: {
-    position: 'absolute',
-    top: 10,
     alignItems: 'center',
-    width: '100%',
+    marginBottom: 20, // Space between logo and text
   },
   logo: {
     width: 200,
@@ -180,8 +202,32 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   menuIcon: {
-    width: 30,
-    height: 30,
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
+  },
+  textInputContainer: {
+    position: 'absolute',
+    bottom: 50, // Adjust this value to move the input up or down
+    width: '80%',
+    flexDirection: 'row', // Align text input and send icon horizontally
+    alignItems: 'center',
+  },
+  textInput: {
+    flex: 1, // This ensures the text input takes up all available space
+    padding: 10,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    fontSize: 16,
+  },
+  sendIconContainer: {
+    marginLeft: 10, // Space between the text input and the send icon
+  },
+  sendIcon: {
+    width: 20,
+    height: 20,
     resizeMode: 'contain',
   },
 });
