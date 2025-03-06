@@ -1,16 +1,33 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, TextInput } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 
 const logo = require('./assets/thrivelogo.png');
-const menuIcon = require('./assets/menu-icon.png'); // Your menu icon file
-const sendIcon = require('./assets/send.png'); // Your send icon file
+const menuIcon = require('./assets/menu-icon.png');
+const sendIcon = require('./assets/send.png');
 
-function UploadButton() {
-  const [fileInfo, setFileInfo] = useState(null);
+export default function App() {
+  // Controls the visibility of the sidebar
+  const [sidebarVisible, setSidebarVisible] = useState(true);
+  // Stores user input from the text field 
+  const [textInput, setTextInput] = useState(''); 
+  // Stores the list of uploaded files 
+  const [uploadedFiles, setUploadedFiles] = useState([
+    { id: 1, title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
+    { id: 2, title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
+    { id: 3, title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" }
+  ]);
+
+  const toggleSidebar = () => {
+    setSidebarVisible(!sidebarVisible);
+  };
+
+  const handleTextChange = (text) => {
+    setTextInput(text);
+  };
+
   const handleFileUpload = async () => {
     try {
       const doc = await DocumentPicker.getDocumentAsync({
@@ -23,17 +40,14 @@ function UploadButton() {
 
       const file = doc.assets[0];
       const uploadDoc = {
+        id: uploadedFiles.length + 1, // ensure unique IDs
         title: file.name,
-        client: "TestClient",
-        author: file.name, 
-        participants: "TestParticipants",
-        date: new Date(),
-        notes: file,
+        date: new Date().toLocaleString(),
       };
 
       await axios.post("http://localhost:3000/upload", uploadDoc);
-
-      setFileInfo(uploadDoc);
+      
+      setUploadedFiles(prevFiles => [uploadDoc, ...prevFiles]); // ensure state updates correctly
       alert('File uploaded successfully!');
     } catch (error) {
       console.error("File upload failed:", error);
@@ -42,46 +56,13 @@ function UploadButton() {
   };
 
   return (
-    <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
-      <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
-    </TouchableOpacity>
-  );
-}
-
-export default function App() {
-  const [sidebarVisible, setSidebarVisible] = useState(true); // State to track sidebar visibility
-  const [textInput, setTextInput] = useState(''); // State to track text input value
-
-  const toggleSidebar = () => {
-    setSidebarVisible(!sidebarVisible);
-  };
-
-  const handleTextChange = (text) => {
-    setTextInput(text);
-  };
-
-  return (
     <View style={styles.container}>
-      {/* Sidebar */}
       {sidebarVisible && (
         <View style={styles.sidebar}>
           <Text style={styles.sidebarTitle}>History</Text>
           <FlatList
-            data={[
-              { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
-              { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
-              { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
-              { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
-              { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
-              { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
-              { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
-              { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
-              { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
-              { title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
-              { title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
-              { title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" },
-            ]}
-            keyExtractor={(item, index) => index.toString()}
+            data={uploadedFiles}
+            keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <View style={styles.historyItem}>
                 <Text style={styles.historyText}>{item.title}</Text>
@@ -92,23 +73,21 @@ export default function App() {
         </View>
       )}
 
-      {/* Main Content */}
       <View style={styles.mainContent}>
         <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
           <Image source={menuIcon} style={styles.menuIcon} />
         </TouchableOpacity>
-        
+
         <View style={styles.logoContainer}>
           <Image source={logo} style={styles.logo} />
         </View>
 
-        {/* Centered text */}
         <Text style={styles.fileTypesText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
 
-        {/* Upload Button centered */}
-        <UploadButton />
+        <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
+          <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
+        </TouchableOpacity>
 
-        {/* Text Input and Send Icon */}
         <View style={styles.textInputContainer}>
           <TextInput
             style={styles.textInput}
@@ -130,8 +109,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'row', // sidebar + main container
-    backgroundColor: 'rgb(220, 244, 255)', 
+    flexDirection: 'row',
+    backgroundColor: 'rgb(220, 244, 255)',
   },
   sidebar: {
     width: 250,
@@ -160,14 +139,13 @@ const styles = StyleSheet.create({
   },
   mainContent: {
     flex: 1,
-    justifyContent: 'center', // Center elements vertically
-    alignItems: 'center', // Center elements horizontally
-    paddingBottom: 20, // Space for text input at the bottom
-    position: 'relative', // To allow positioning of the text input container
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: 20,
   },
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 20, // Space between logo and text
+    marginBottom: 20,
   },
   logo: {
     width: 200,
@@ -188,7 +166,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
     borderRadius: 8,
     alignItems: 'center',
-    justifyContent: 'center',
   },
   uploadButtonText: {
     color: '#fff',
@@ -199,22 +176,22 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 20,
     left: 20,
-    zIndex: 1000,
   },
   menuIcon: {
-    width: 20,
-    height: 20,
+    width: 30,
+    height: 30,
     resizeMode: 'contain',
   },
   textInputContainer: {
     position: 'absolute',
-    bottom: 50, // Adjust this value to move the input up or down
+    bottom: 50,
     width: '80%',
-    flexDirection: 'row', // Align text input and send icon horizontally
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   textInput: {
-    flex: 1, // This ensures the text input takes up all available space
+    flex: 1,
     padding: 10,
     backgroundColor: '#fff',
     borderRadius: 8,
@@ -223,11 +200,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   sendIconContainer: {
-    marginLeft: 10, // Space between the text input and the send icon
+    marginLeft: 10,
   },
   sendIcon: {
-    width: 20,
-    height: 20,
+    width: 30,
+    height: 30,
     resizeMode: 'contain',
   },
 });
