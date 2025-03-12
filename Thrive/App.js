@@ -5,15 +5,15 @@ import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 
 const logo = require('./assets/thrivelogo.png');
-const menuIcon = require('./assets/menu-icon.png');
-const sendIcon = require('./assets/send.png');
+const menuIcon = require('./assets/menu-icon.png'); // sidebar menu icon
+const sendIcon = require('./assets/send.png');      // text box icon
 
 export default function App() {
-  // Controls the visibility of the sidebar
+  // controls the visibility of the sidebar
   const [sidebarVisible, setSidebarVisible] = useState(true);
-  // Stores user input from the text field 
+  // stores user input from the text field 
   const [textInput, setTextInput] = useState(''); 
-  // Stores the list of uploaded files 
+  // stores the list of uploaded files 
   const [uploadedFiles, setUploadedFiles] = useState([
     { id: 1, title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
     { id: 2, title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
@@ -38,6 +38,7 @@ export default function App() {
         return;
       }
 
+      // uploading files 
       const file = doc.assets[0];
       const uploadDoc = {
         id: uploadedFiles.length + 1, // ensure unique IDs
@@ -45,6 +46,7 @@ export default function App() {
         date: new Date().toLocaleString(),
       };
 
+      // send the document to the backend
       await axios.post("http://localhost:3000/upload", uploadDoc);
       
       setUploadedFiles(prevFiles => [uploadDoc, ...prevFiles]); // ensure state updates correctly
@@ -61,8 +63,12 @@ export default function App() {
         <View style={styles.sidebar}>
           <Text style={styles.sidebarTitle}>History</Text>
           <FlatList
+          // flatlist takes upLoadedFiles (array of objects)
+          // each object is a file with properties id, title, date 
             data={uploadedFiles}
+            // each item requires a unique string (#)
             keyExtractor={(item) => item.id.toString()}
+            // render each item from the list 
             renderItem={({ item }) => (
               <View style={styles.historyItem}>
                 <Text style={styles.historyText}>{item.title}</Text>
@@ -73,48 +79,56 @@ export default function App() {
         </View>
       )}
 
-      <View style={styles.mainContent}>
+      <View style={styles.mainContent}> 
+
+        {/* sidebar menu button to toggle visibility */}
         <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
           <Image source={menuIcon} style={styles.menuIcon} />
         </TouchableOpacity>
 
+        {/* logo container */}
         <View style={styles.logoContainer}>
           <Image source={logo} style={styles.logo} />
         </View>
 
+        {/* text indicating allowed file types */}
         <Text style={styles.fileTypesText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
 
+        {/* button for file upload */}
         <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
           <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
         </TouchableOpacity>
 
+        {/* text input field to enter user input */}
         <View style={styles.textInputContainer}>
           <TextInput
             style={styles.textInput}
             placeholder="Enter some text here"
             value={textInput}
-            onChangeText={handleTextChange}
+            onChangeText={handleTextChange} // updates the text input value in the state
           />
+          {/* send icon button next to the text input box */}
           <TouchableOpacity style={styles.sendIconContainer}>
             <Image source={sendIcon} style={styles.sendIcon} />
           </TouchableOpacity>
         </View>
-
+        {/*auto prop adjusts the status bar styling based on the background of the screen*/}
         <StatusBar style="auto" />
       </View>
     </View>
   );
 }
 
+// styles for all components on the landing/main page 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: 'rgb(220, 244, 255)',
+    backgroundColor: 'rgb(220, 244, 255)', // background color for the whole screen
   },
   sidebar: {
     width: 250,
-    backgroundColor: 'rgba(244, 244, 244, 0.7)',
+    backgroundColor: 'rgba(244, 244, 244, 0.7)', // semi-transparent background for sidebar 
     padding: 15,
     borderRightWidth: 1,
     borderRightColor: '#ccc',
@@ -127,7 +141,7 @@ const styles = StyleSheet.create({
   historyItem: {
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    borderBottomColor: '#ddd',  // border separating each file item
   },
   historyText: {
     fontSize: 14,
@@ -135,7 +149,7 @@ const styles = StyleSheet.create({
   },
   historyDate: {
     fontSize: 12,
-    color: '#666',
+    color: '#666',  // lighter color for the date text
   },
   mainContent: {
     flex: 1,
@@ -163,12 +177,12 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingVertical: 12,
     paddingHorizontal: 20,
-    backgroundColor: '#000',
+    backgroundColor: '#000', // black background for button 
     borderRadius: 8,
     alignItems: 'center',
   },
   uploadButtonText: {
-    color: '#fff',
+    color: '#fff',  // white text color on the button
     fontSize: 16,
     fontWeight: 'bold',
   },
