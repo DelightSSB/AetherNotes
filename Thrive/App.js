@@ -20,6 +20,9 @@ export default function App() {
     { id: 3, title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" }
   ]);
 
+  const [chats, setChats] = useState([]);
+  const [activeChatId, setActiveChatId] = useState(null);
+
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
   };
@@ -58,10 +61,18 @@ export default function App() {
   };
 
   return (
+
+    // Start of code to build sidebar
+
     <View style={styles.container}>
       {sidebarVisible && (
         <View style={styles.sidebar}>
           <Text style={styles.sidebarTitle}>History</Text>
+          {/*Code for "new chat" buttons */}
+          <TouchableOpacity style={styles.newChatButton} onPress={makeNewChat}>
+          <Text style={styles.newChatButtonText}>New Notes Summary</Text>
+        </TouchableOpacity>
+
           <FlatList
           // flatlist takes upLoadedFiles (array of objects)
           // each object is a file with properties id, title, date 
@@ -117,6 +128,20 @@ export default function App() {
       </View>
     </View>
   );
+
+  
+}
+
+// (INCOMPLETE) Create a new chat function, called when the "new chat" button is pressed
+const makeNewChat = () => {
+  const newChat = {
+    id: chats.length + 1,
+    title: 'Chat ${chats.length + 1}',
+    messages: [],
+
+  }
+    setChats([chats, newChat]);
+    setActiveChatId(newChat.id);
 }
 
 // styles for all components on the landing/main page 
@@ -124,11 +149,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: 'rgb(220, 244, 255)', // background color for the whole screen
+    backgroundColor: 'rgb(199, 200, 216)', // background color for the whole screen
   },
   sidebar: {
     width: 250,
-    backgroundColor: 'rgba(244, 244, 244, 0.7)', // semi-transparent background for sidebar 
+    backgroundColor: 'rgba(244, 244, 244, .5)', // semi-transparent background for sidebar 
     padding: 15,
     borderRightWidth: 1,
     borderRightColor: '#ccc',
@@ -177,9 +202,24 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingVertical: 12,
     paddingHorizontal: 20,
-    backgroundColor: '#000', // black background for button 
+    backgroundColor: 'rgb(41, 61, 122)',
+    // backgroundColor: '#000', // black background for button 
     borderRadius: 8,
     alignItems: 'center',
+  },
+  newChatButton: {
+    marginTop: 10,
+    backgroundColor: 'rgb(41, 61, 122)',
+    paddingVertical: 22,
+    paddingHorizontal: 20,
+    // backgroundColor: '#000', // black background for button 
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  newChatButtonText: {
+    color: '#fff',  
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   uploadButtonText: {
     color: '#fff',  // white text color on the button
