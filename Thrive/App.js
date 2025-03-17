@@ -20,11 +20,14 @@ export default function App() {
     { id: 3, title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" }
   ]);
 
-  const [chats, setChats] = useState([]);
-  const [activeChatId, setActiveChatId] = useState(null);
+  const [newChat, createNewChat] = useState(false);
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
+  };
+
+  const makeNewChat = () => {
+    createNewChat(!newChat);
   };
 
   const handleTextChange = (text) => {
@@ -68,10 +71,15 @@ export default function App() {
       {sidebarVisible && (
         <View style={styles.sidebar}>
           <Text style={styles.sidebarTitle}>History</Text>
+
           {/*Code for "new chat" buttons */}
           <TouchableOpacity style={styles.newChatButton} onPress={makeNewChat}>
           <Text style={styles.newChatButtonText}>New Notes Summary</Text>
         </TouchableOpacity>
+
+        
+
+        
 
           <FlatList
           // flatlist takes upLoadedFiles (array of objects)
@@ -90,25 +98,47 @@ export default function App() {
         </View>
       )}
 
+      
+
       <View style={styles.mainContent}> 
+
+        {/*View that's shown when the "new chat" button is pressed */}
+      <View>
+        {newChat && (
+        <View style={styles.newChatScreen}>
+          <Text style={styles.newChatText}>Choose to manually insert notes or upload a file</Text>
+          <TouchableOpacity style={styles.manualNotes}>
+          <Text style={styles.uploadButtonText}>MANUAL NOTES INPUT</Text>
+            </TouchableOpacity>
+
+          <TouchableOpacity style={styles.manualNotes} onPress={handleFileUpload}>
+          <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
+            </TouchableOpacity>
+        </View>
+        )}
+      </View>
 
         {/* sidebar menu button to toggle visibility */}
         <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
           <Image source={menuIcon} style={styles.menuIcon} />
         </TouchableOpacity>
 
-        {/* logo container */}
-        <View style={styles.logoContainer}>
+        {!newChat && (
+        <View>
+          {/* logo container */}
+          <View style={styles.logoContainer}>
           <Image source={logo} style={styles.logo} />
+          </View>
+
+          {/* text indicating allowed file types */}
+          <Text style={styles.fileTypesText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
+
+          {/* button for file upload */}
+          <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
+            <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
+          </TouchableOpacity>
         </View>
-
-        {/* text indicating allowed file types */}
-        <Text style={styles.fileTypesText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
-
-        {/* button for file upload */}
-        <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
-          <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
-        </TouchableOpacity>
+        )}
 
         {/* text input field to enter user input */}
         <View style={styles.textInputContainer}>
@@ -132,17 +162,10 @@ export default function App() {
   
 }
 
-// (INCOMPLETE) Create a new chat function, called when the "new chat" button is pressed
-const makeNewChat = () => {
-  const newChat = {
-    id: chats.length + 1,
-    title: 'Chat ${chats.length + 1}',
-    messages: [],
-
-  }
-    setChats([chats, newChat]);
-    setActiveChatId(newChat.id);
-}
+// // (INCOMPLETE) Create a new chat function, called when the "new chat" button is pressed
+// const makeNewChat = () => {
+//   newChat = true
+//   }
 
 // styles for all components on the landing/main page 
 const styles = StyleSheet.create({
@@ -205,7 +228,30 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(41, 61, 122)',
     // backgroundColor: '#000', // black background for button 
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: 'center'
+  },
+  newChatText: {
+    fontSize: 18, // Make it more readable
+    fontWeight: "bold",
+    marginBottom: 15, // Adds space between text & buttons
+    textAlign: "center",
+  },
+
+    newChatScreen: {
+      flexDirection: "column", // Places buttons side by side
+      justifyContent: "center", // Centers horizontally
+      alignItems: "center", // Aligns buttons vertically
+      marginTop: "50%", // Adjust this value to move them to the vertical center
+    },
+
+    manualNotes: {
+      marginTop: 20,
+      paddingVertical: 12,
+      paddingHorizontal: 20,
+      backgroundColor: 'rgb(41, 61, 122)',
+      // backgroundColor: '#000', // black background for button 
+      borderRadius: 8,
+      marginHorizontal: 15
   },
   newChatButton: {
     marginTop: 10,
