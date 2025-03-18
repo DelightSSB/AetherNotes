@@ -1,16 +1,19 @@
-const connect = require("./connect")
-const express = require("express")
-const cors = require("cors")
-const posts = require("./notesRoutes")
+const connect = require("./connect");
+const express = require("express");
+const cors = require("cors");
+const upload = require("./uploadRoute");
+const bodyParser = require("body-parser");
 
-const app = express()
-const PORT = 3000
+const app = express();
+const PORT = 3000;
 
-app.use(cors())
-app.use(express.json())
-app.use(posts)
+app.use(cors());
+app.use(express.json());
+app.use(bodyParser.json({ limit: "100mb" }));
+app.use(bodyParser.urlencoded({ limit: "100mb", extended: true }));
+app.use(upload);
 
 app.listen(PORT, () => {
     connect.connectToServer()
-    console.log('Server is running on port ${PORT}')
-})
+    console.log(`Server is running on port ${PORT}`)
+});

@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, TextInput } 
 import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 
+
 const logo = require('./assets/thrivelogo.png');
 const menuIcon = require('./assets/menu-icon.png'); // sidebar menu icon
 const sendIcon = require('./assets/send.png');      // text box icon
@@ -38,12 +39,15 @@ export default function App() {
         return;
       }
 
+
       // uploading files 
       const file = doc.assets[0];
       const uploadDoc = {
         id: uploadedFiles.length + 1, // ensure unique IDs
         title: file.name,
         date: new Date().toLocaleString(),
+        title: file.name,
+        notes: doc,
       };
 
       // send the document to the backend
@@ -57,18 +61,32 @@ export default function App() {
     }
   };
 
+  async function queryModel(question) {
+    try {
+      const response = await fetch("http://localhost:8000/query", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question }),
+      });
+      const data = await response.json();
+      console.log("Model Response:", data.answer);
+    } catch (error) {
+      console.error('Error querying model:', error);
+    }
+  }
+
+  const handleSend = () => {
+    queryModel(textInput);
+  };
+
   return (
     <View style={styles.container}>
       {sidebarVisible && (
         <View style={styles.sidebar}>
           <Text style={styles.sidebarTitle}>History</Text>
           <FlatList
-          // flatlist takes upLoadedFiles (array of objects)
-          // each object is a file with properties id, title, date 
             data={uploadedFiles}
-            // each item requires a unique string (#)
             keyExtractor={(item) => item.id.toString()}
-            // render each item from the list 
             renderItem={({ item }) => (
               <View style={styles.historyItem}>
                 <Text style={styles.historyText}>{item.title}</Text>
@@ -81,54 +99,46 @@ export default function App() {
 
       <View style={styles.mainContent}> 
 
-        {/* sidebar menu button to toggle visibility */}
         <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
           <Image source={menuIcon} style={styles.menuIcon} />
         </TouchableOpacity>
 
-        {/* logo container */}
         <View style={styles.logoContainer}>
           <Image source={logo} style={styles.logo} />
         </View>
 
-        {/* text indicating allowed file types */}
         <Text style={styles.fileTypesText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
 
-        {/* button for file upload */}
         <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
           <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
         </TouchableOpacity>
 
-        {/* text input field to enter user input */}
         <View style={styles.textInputContainer}>
           <TextInput
             style={styles.textInput}
             placeholder="Enter some text here"
             value={textInput}
-            onChangeText={handleTextChange} // updates the text input value in the state
+            onChangeText={handleTextChange}
           />
-          {/* send icon button next to the text input box */}
-          <TouchableOpacity style={styles.sendIconContainer}>
+          <TouchableOpacity style={styles.sendIconContainer} onPress={handleSend}>
             <Image source={sendIcon} style={styles.sendIcon} />
           </TouchableOpacity>
         </View>
-        {/*auto prop adjusts the status bar styling based on the background of the screen*/}
         <StatusBar style="auto" />
       </View>
     </View>
   );
 }
 
-// styles for all components on the landing/main page 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: 'rgb(220, 244, 255)', // background color for the whole screen
+    backgroundColor: 'rgb(220, 244, 255)',
   },
   sidebar: {
     width: 250,
-    backgroundColor: 'rgba(244, 244, 244, 0.7)', // semi-transparent background for sidebar 
+    backgroundColor: 'rgba(244, 244, 244, 0.7)',
     padding: 15,
     borderRightWidth: 1,
     borderRightColor: '#ccc',
@@ -141,7 +151,7 @@ const styles = StyleSheet.create({
   historyItem: {
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#ddd',  // border separating each file item
+    borderBottomColor: '#ddd',
   },
   historyText: {
     fontSize: 14,
@@ -149,7 +159,7 @@ const styles = StyleSheet.create({
   },
   historyDate: {
     fontSize: 12,
-    color: '#666',  // lighter color for the date text
+    color: '#666',
   },
   mainContent: {
     flex: 1,
@@ -177,12 +187,12 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingVertical: 12,
     paddingHorizontal: 20,
-    backgroundColor: '#000', // black background for button 
+    backgroundColor: '#000',
     borderRadius: 8,
     alignItems: 'center',
   },
   uploadButtonText: {
-    color: '#fff',  // white text color on the button
+    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
