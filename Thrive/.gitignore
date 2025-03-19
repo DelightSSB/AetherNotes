@@ -40,6 +40,7 @@ yarn-error.*
 
 # python venv files
 */lenv/*
+*/nenv/*
 */__pycache__/*
 
 # AI model files
