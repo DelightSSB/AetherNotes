@@ -37,3 +37,11 @@ yarn-error.*
 
 # .env files
 *.env
+
+# python venv files
+*/lenv/*
+*/nenv/*
+*/__pycache__/*
+
+# AI model files
+*.gguf

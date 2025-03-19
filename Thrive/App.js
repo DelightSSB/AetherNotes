@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, TextInput } 
 import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 
+
 const logo = require('./assets/thrivelogo.png');
 const menuIcon = require('./assets/menu-icon.png'); // sidebar menu icon
 const sendIcon = require('./assets/send.png');      // text box icon
@@ -30,8 +31,12 @@ export default function App() {
     createNewChat(!newChat);
   };
 
-  const handleTextChange = (text) => {
+  const handleTextChange = async (text) => {
+   llama2
     setTextInput(text);
+
+    // send the document to the backend
+    await axios.post("http://localhost:3000/query", text); 
   };
 
   const handleFileUpload = async () => {
@@ -43,13 +48,19 @@ export default function App() {
       if (doc.type === 'cancel') {
         return;
       }
-
+      console.log(doc)
       // uploading files 
       const file = doc.assets[0];
+      // extract text from txt
+      const b64Text = file.uri.slice(23);
+      console.log(b64Text.slice(23));
+      const cleanText = atob(b64Text);
+
       const uploadDoc = {
         id: uploadedFiles.length + 1, // ensure unique IDs
         title: file.name,
         date: new Date().toLocaleString(),
+        notes: cleanText,
       };
 
       // send the document to the backend
