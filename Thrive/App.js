@@ -21,11 +21,18 @@ export default function App() {
     { id: 3, title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" }
   ]);
 
+  const [newChat, createNewChat] = useState(false);
+
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
   };
 
+  const makeNewChat = () => {
+    createNewChat(!newChat);
+  };
+
   const handleTextChange = async (text) => {
+   llama2
     setTextInput(text);
 
     // send the document to the backend
@@ -68,10 +75,23 @@ export default function App() {
   };
 
   return (
+
+    // Start of code to build sidebar
+
     <View style={styles.container}>
       {sidebarVisible && (
         <View style={styles.sidebar}>
           <Text style={styles.sidebarTitle}>History</Text>
+
+          {/*Code for "new chat" buttons */}
+          <TouchableOpacity style={styles.newChatButton} onPress={makeNewChat}>
+          <Text style={styles.newChatButtonText}>New Notes Summary</Text>
+        </TouchableOpacity>
+
+        
+
+        
+
           <FlatList
           // flatlist takes upLoadedFiles (array of objects)
           // each object is a file with properties id, title, date 
@@ -89,25 +109,47 @@ export default function App() {
         </View>
       )}
 
+      
+
       <View style={styles.mainContent}> 
+
+        {/*View that's shown when the "new chat" button is pressed */}
+      <View>
+        {newChat && (
+        <View style={styles.newChatScreen}>
+          <Text style={styles.newChatText}>Choose to manually insert notes or upload a file</Text>
+          <TouchableOpacity style={styles.manualNotes}>
+          <Text style={styles.uploadButtonText}>MANUAL NOTES INPUT</Text>
+            </TouchableOpacity>
+
+          <TouchableOpacity style={styles.manualNotes} onPress={handleFileUpload}>
+          <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
+            </TouchableOpacity>
+        </View>
+        )}
+      </View>
 
         {/* sidebar menu button to toggle visibility */}
         <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
           <Image source={menuIcon} style={styles.menuIcon} />
         </TouchableOpacity>
 
-        {/* logo container */}
-        <View style={styles.logoContainer}>
+        {!newChat && (
+        <View>
+          {/* logo container */}
+          <View style={styles.logoContainer}>
           <Image source={logo} style={styles.logo} />
+          </View>
+
+          {/* text indicating allowed file types */}
+          <Text style={styles.fileTypesText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
+
+          {/* button for file upload */}
+          <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
+            <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
+          </TouchableOpacity>
         </View>
-
-        {/* text indicating allowed file types */}
-        <Text style={styles.fileTypesText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
-
-        {/* button for file upload */}
-        <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
-          <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
-        </TouchableOpacity>
+        )}
 
         {/* text input field to enter user input */}
         <View style={styles.textInputContainer}>
@@ -127,18 +169,25 @@ export default function App() {
       </View>
     </View>
   );
+
+  
 }
+
+// // (INCOMPLETE) Create a new chat function, called when the "new chat" button is pressed
+// const makeNewChat = () => {
+//   newChat = true
+//   }
 
 // styles for all components on the landing/main page 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: 'rgb(220, 244, 255)', // background color for the whole screen
+    backgroundColor: 'rgb(199, 200, 216)', // background color for the whole screen
   },
   sidebar: {
     width: 250,
-    backgroundColor: 'rgba(244, 244, 244, 0.7)', // semi-transparent background for sidebar 
+    backgroundColor: 'rgba(244, 244, 244, .5)', // semi-transparent background for sidebar 
     padding: 15,
     borderRightWidth: 1,
     borderRightColor: '#ccc',
@@ -187,9 +236,47 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingVertical: 12,
     paddingHorizontal: 20,
-    backgroundColor: '#000', // black background for button 
+    backgroundColor: 'rgb(41, 61, 122)',
+    // backgroundColor: '#000', // black background for button 
     borderRadius: 8,
+    alignItems: 'center'
+  },
+  newChatText: {
+    fontSize: 18, // Make it more readable
+    fontWeight: "bold",
+    marginBottom: 15, // Adds space between text & buttons
+    textAlign: "center",
+  },
+
+    newChatScreen: {
+      flexDirection: "column", // Places buttons side by side
+      justifyContent: "center", // Centers horizontally
+      alignItems: "center", // Aligns buttons vertically
+      marginTop: "50%", // Adjust this value to move them to the vertical center
+    },
+
+    manualNotes: {
+      marginTop: 20,
+      paddingVertical: 12,
+      paddingHorizontal: 20,
+      backgroundColor: 'rgb(41, 61, 122)',
+      // backgroundColor: '#000', // black background for button 
+      borderRadius: 8,
+      marginHorizontal: 15
+  },
+  newChatButton: {
+    marginTop: 10,
+    backgroundColor: 'rgb(41, 61, 122)',
+    paddingVertical: 22,
+    paddingHorizontal: 20,
+    // backgroundColor: '#000', // black background for button 
+    borderRadius: 10,
     alignItems: 'center',
+  },
+  newChatButtonText: {
+    color: '#fff',  
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   uploadButtonText: {
     color: '#fff',  // white text color on the button
