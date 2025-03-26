@@ -6,6 +6,11 @@ import { StyleSheet }from 'react-native';
 
 // styles for all components on the landing/main page 
 const styles = StyleSheet.create({
+  standartText:{
+    fontSize: 20,
+    fontWeight: 'bold'
+
+  },
     container: {
       flex: 1,
       flexDirection: 'row',
@@ -67,29 +72,7 @@ const styles = StyleSheet.create({
       borderRadius: 8,
       alignItems: 'center'
     },
-    newChatText: {
-      fontSize: 18, // Make it more readable
-      fontWeight: "bold",
-      marginBottom: 15, // Adds space between text & buttons
-      textAlign: "center",
-    },
-  
-      newChatScreen: {
-        flexDirection: "column", // Places buttons side by side
-        justifyContent: "center", // Centers horizontally
-        alignItems: "center", // Aligns buttons vertically
-        marginTop: "50%", // Adjust this value to move them to the vertical center
-      },
-  
-      manualNotes: {
-        marginTop: 20,
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        backgroundColor: 'rgb(41, 61, 122)',
-        // backgroundColor: '#000', // black background for button 
-        borderRadius: 8,
-        marginHorizontal: 15
-    },
+
     newChatButton: {
       marginTop: 10,
       backgroundColor: 'rgb(41, 61, 122)',
