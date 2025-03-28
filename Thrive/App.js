@@ -5,6 +5,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 
 
+
 const logo = require('./assets/thrivelogo.png');
 const menuIcon = require('./assets/menu-icon.png'); // sidebar menu icon
 const sendIcon = require('./assets/send.png');      // text box icon
@@ -31,13 +32,30 @@ export default function App() {
     createNewChat(!newChat);
   };
 
-  const handleTextChange = async (text) => {
-   llama2
-    setTextInput(text);
+  /*
+  This funtion handles the query to the AI and then provides the response. 
+  In order for it to work open a seperate terminal and navigate to the Backend directory and run command 'node server.js'
+  Then once you upload the file it is currently set just to send the response message to console so you can preview it there.
+  Please only use *.txt files. I created one using chat and I will add to the google drive named 'test.txt' if you want to use it!
+  You will also need to add the API key to your config-2.env file so that it will work properly with auth. if you need help just let me know!
+  */
 
-    // send the document to the backend
-    await axios.post("http://localhost:3000/query", text); 
-  };
+  const summaryReturn = async (text) => {
+    try {
+        const response = await axios.post("http://localhost:3000/summary", {
+            text: text 
+        });
+ 
+        console.log("Response:", response.data.choices[0].message.content); // this is the responce from the AI. It is formatted in markdown
+    } catch (error) {
+        console.error("Error sending summary request:", error);
+    }
+ };
+ 
+
+  const handleTextChange = async () => {
+
+  }
 
   const handleFileUpload = async () => {
     try {
@@ -48,21 +66,38 @@ export default function App() {
       if (doc.type === 'cancel') {
         return;
       }
-      console.log(doc)
-      // uploading files 
-      const file = doc.assets[0];
-      // extract text from txt
-      const b64Text = file.uri.slice(23);
-      console.log(b64Text.slice(23));
-      const cleanText = atob(b64Text);
 
-      const uploadDoc = {
-        id: uploadedFiles.length + 1, // ensure unique IDs
+
+      const file = doc.assets[0];
+      let cleanText;
+      let fileType;
+
+      
+      // switch case for doc types
+      switch(file.mimeType){
+        case "text/plain":
+          const b64Text = file.uri.slice(23);
+          cleanText = atob(b64Text);
+          break;
+        case "application/pdf":
+          cleanText = doc;
+          fileType = "PDF"
+          break;
+        case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+          cleanText = doc;
+          fileType = "docx"
+          break;
+      }
+
+      const uploadDoc = JSON.stringify({
+        id: uploadedFiles.length + 1, 
         title: file.name,
         date: new Date().toLocaleString(),
         notes: cleanText,
-      };
+        type: fileType,
+      });
 
+      summaryReturn(cleanText)
       // send the document to the backend
       await axios.post("http://localhost:3000/upload", uploadDoc);
       

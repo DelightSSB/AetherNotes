@@ -27,6 +27,7 @@ const connect = require("./connect")
 const express = require("express")
 const cors = require("cors")
 const upload = require("./uploadRoute")
+const summary = require("./summaryRoute")
 
 
 
@@ -37,6 +38,7 @@ app.use(cors())
 app.use(express.json({limit: '150mb'}))
 //app.use(fileUpload())
 app.use(upload)
+app.use(summary)
 
 app.listen(PORT, () => {
     connect.connectToServer()
