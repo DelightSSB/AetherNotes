@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, TextInput } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
-import styles from './styles'
+import { set } from 'mongoose';
+import { Picker } from '@react-native-picker/picker';
 
 
 const logo = require('./assets/thrivelogo.png');
@@ -22,28 +23,18 @@ export default function App() {
     { id: 3, title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" }
   ]);
 
-  const [chatHistory, setChatHistory] = useState([]); // All chats in history
-  const [activeChatId, setActiveChatId] = useState(null); // Current chat being viewed
-
-
-  const [newChatView, setNewChatView] = useState(null);
+  const [newChat, createNewChat] = useState(false);
+  
+  //pop up visibility and input state
+  const[companyModalVisible, setCompanyModalVisible] = useState(false);
+  const [companyName, setCompanyName] = useState('');
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
   };
 
-  // Creates a new chat. Defaults chat ID to length of histoy, gives the new chat a title, and records the time the chat was made
   const makeNewChat = () => {
-    const chatID = chatHistory.length + 1;
-    const newChat = {
-      id: chatID,
-      title: `Chat ${chatID}`, //variable to be updated when the popup menu is implemented
-      timestamp: new Date().toLocaleString(),
-    }; //Creates a new chat object with a unique ID, a title to view on the sidebar, and date on when it was created (saved as a string) 
-    
-    setChatHistory([newChat, ...chatHistory]); //Adds this newChat object to the chatHistory array (This adds this chat to the beginning of the array rather than the end)
-    setActiveChatId(chatID); //Sets the active chat to the one just created, ensures the new chat you're editing is the newest one created assuming you stay in the chat
-    setNewChatView(true); //Ensures the view is automatically changed when the button is pressed
+    createNewChat(!newChat);
   };
 
   const handleTextChange = async (text) => {
@@ -53,8 +44,15 @@ export default function App() {
     // send the document to the backend
     await axios.post("http://localhost:3000/query", text); 
   };
+  
+  //show pop up instead of immediate upload
+  const handleFileUpload = () => {
+    setCompanyModalVisible(true);
+  };
+  //upload after company name is submitted
+  const handleCompanySubmit = async () => {
+    setCompanyModalVisible(false);
 
-  const handleFileUpload = async () => {
     try {
       const doc = await DocumentPicker.getDocumentAsync({
         type: ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'],
@@ -64,10 +62,8 @@ export default function App() {
         return;
       }
       console.log(doc)
-
       // uploading files 
       const file = doc.assets[0];
-
       // extract text from txt
       const b64Text = file.uri.slice(23);
       console.log(b64Text.slice(23));
@@ -78,6 +74,7 @@ export default function App() {
         title: file.name,
         date: new Date().toLocaleString(),
         notes: cleanText,
+        company: companyName, //include company
       };
 
       // send the document to the backend
@@ -85,6 +82,7 @@ export default function App() {
       
       setUploadedFiles(prevFiles => [uploadDoc, ...prevFiles]); // ensure state updates correctly
       alert('File uploaded successfully!');
+      setCompanyName(''); //reset company after submission
     } catch (error) {
       console.error("File upload failed:", error);
       alert('Failed to upload the file.');
@@ -93,9 +91,31 @@ export default function App() {
 
   return (
 
-    // Start of code to build sidebar
-
+    
+    //entering company name
     <View style={styles.container}>
+      {companyModalVisible && (
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalBox}>
+          <Text style={styles.modalTitle}>What is your company?</Text>
+          <Picker
+  selectedValue={companyName}
+  style={styles.picker}
+  onValueChange={(itemValue) => setCompanyName(itemValue)}
+>
+  <Picker.Item label="Select Company" value="" />  {/* Default option */}
+  <Picker.Item label="Company 1" value="Company 1" />
+  <Picker.Item label="Company 2" value="Company 2" />
+  <Picker.Item label="Company 3" value="Company 3" />
+</Picker>
+          <TouchableOpacity style={styles.modalButton} onPress={handleCompanySubmit}>
+            <Text style={styles.modalButtonText}>Continue</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    )}
+    
+    
       {sidebarVisible && (
         <View style={styles.sidebar}>
           <Text style={styles.sidebarTitle}>History</Text>
@@ -106,40 +126,15 @@ export default function App() {
         </TouchableOpacity>
 
         
-        <FlatList
-          //This flatlist takes in the array chatHistory which is story the chats created
-          // each object is a file with properties id, title, and timestamp 
-            data={chatHistory}
 
-            // each item requires a unique string (#)
-            keyExtractor={(item) => item.id.toString()}
-
-            // renders each items from the chatHistory array and makes them a button to be used to restore their history
-            renderItem={({ item }) => (
-              <TouchableOpacity
-              onPress={() => {
-                setActiveChatId(item.id);
-                setNewChatView(false)
-              }}>
-                {/* Displays the title and the date it was created */}
-              <View style={styles.historyItem}>
-                <Text style={styles.historyText}>{item.title}</Text>
-                <Text style={styles.historyDate}>Created on {item.timestamp}</Text>
-              </View>
-              </TouchableOpacity>
-            )}
-          />
         
-        {/* Old flatlist for when the sidebar showed test files and chats. */}
 
-          {/* <FlatList
+          <FlatList
           // flatlist takes upLoadedFiles (array of objects)
           // each object is a file with properties id, title, date 
             data={uploadedFiles}
-
             // each item requires a unique string (#)
             keyExtractor={(item) => item.id.toString()}
-
             // render each item from the list 
             renderItem={({ item }) => (
               <View style={styles.historyItem}>
@@ -147,88 +142,51 @@ export default function App() {
                 <Text style={styles.historyDate}>{item.date}</Text>
               </View>
             )}
-          /> */}
+          />
         </View>
       )}
 
       
-      {/* Start of main view that is displayed */}
+
       <View style={styles.mainContent}> 
 
-
-      {/* This view is displayed when the user first loads the page */}
-      <View>{newChatView==null && (
-        <View>
-  
-        <Text style={[styles.standartText, { textAlign: 'center'}, {justifyContent: "flex-start"}, {paddingTop: 1}]}>
-          Chat ID: None
-          </Text>
-        <Text style={[styles.standartText, { textAlign: 'center'}, {justifyContent: "flex-start"}, {paddingTop: 1}]}>
-          Press "New Chat Summary" to create a chat!
-        </Text>
-          
-        </View>
-      )}
-      
-      </View>
-
-
-      {/*newChat == true */}
+        {/*View that's shown when the "new chat" button is pressed */}
       <View>
-        {newChatView==true && (
-        <View>
-          {/* To display the current chat the user is looking in (for testing) */}
-          <Text style={[styles.standartText, { textAlign: 'center'}, {justifyContent: "flex-start"}, {paddingTop: 1}]}>
-            New Chat ID: {activeChatId}
-            </Text>
+        {newChat && (
+        <View style={styles.newChatScreen}>
+          <Text style={styles.newChatText}>Choose to manually insert notes or upload a file</Text>
+          <TouchableOpacity style={styles.manualNotes}>
+          <Text style={styles.uploadButtonText}>MANUAL NOTES INPUT</Text>
+            </TouchableOpacity>
 
-          {/* logo container */}
-          <View style={styles.logoContainer}>
-          <Image source={logo} style={styles.logo} />
-          </View>
-
-          {/* text indicating allowed file types */}
-          <Text style={styles.fileTypesText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
-
-          {/* button for file upload */}
-          <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
-            <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
-          </TouchableOpacity>
+          <TouchableOpacity style={styles.manualNotes} onPress={handleFileUpload}>
+          <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
+            </TouchableOpacity>
         </View>
         )}
       </View>
-
-
-      {/* newChat == false */}
-      {newChatView==false && (
-        <View>
-          {/* To display the current chat the user is looking in (for testing) */}
-          <Text style={[styles.standartText, { textAlign: 'center'}, {paddingTop: 1},]}>
-            This is an old chat with ID: {activeChatId}
-            </Text>
-
-          {/* logo container */}
-          <View style={styles.logoContainer}>
-          <Image source={logo} style={styles.logo} />
-          </View>
-
-          {/* text indicating allowed file types */}
-          <Text style={styles.fileTypesText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
-
-          {/* button for file upload */}
-          <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
-            <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
-          </TouchableOpacity>
-        </View>
-        )}
-
 
         {/* sidebar menu button to toggle visibility */}
         <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
           <Image source={menuIcon} style={styles.menuIcon} />
         </TouchableOpacity>
 
-        
+        {!newChat && (
+        <View>
+          {/* logo container */}
+          <View style={styles.logoContainer}>
+          <Image source={logo} style={styles.logo} />
+          </View>
+
+          {/* text indicating allowed file types */}
+          <Text style={styles.fileTypesText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
+
+          {/* button for file upload */}
+          <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
+            <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
+          </TouchableOpacity>
+        </View>
+        )}
 
         {/* text input field to enter user input */}
         <View style={styles.textInputContainer}>

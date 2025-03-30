@@ -127,6 +127,16 @@ const styles = StyleSheet.create({
       height: 30,
       resizeMode: 'contain',
     },
+    picker: {
+      height: 50,
+      width: 250,
+      marginBottom: 15,
+      borderWidth: 1,
+      borderColor: '#ccc',
+      borderRadius: 5,
+      backgroundColor: '#fff',
+    },
+    
 
 });
 
