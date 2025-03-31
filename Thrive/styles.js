@@ -127,6 +127,68 @@ const styles = StyleSheet.create({
       height: 30,
       resizeMode: 'contain',
     },
+    modalOverlay: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dim background
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 999, 
+    },
+    
+    modalBox: {
+      width: 300,
+      backgroundColor: '#fff',
+      padding: 20,
+      borderRadius: 10,
+      alignItems: 'center', 
+      elevation: 10, 
+      shadowColor: '#000', 
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      zIndex: 1000, 
+    }, 
+    modalButton: {
+      marginTop: 10,
+      backgroundColor: 'rgb(41, 61, 122)', // Match button background color
+      paddingVertical: 12,
+      paddingHorizontal: 20,
+      borderRadius: 8,
+      alignItems: 'center',
+    },
+    modalTitle: {
+      fontSize: 18, // Match sidebar title or button text size
+      fontWeight: 'bold', // Match boldness with buttons
+      color: '#333', // Consistent text color
+      marginBottom: 15,
+      textAlign: 'center',
+    },    
+    modalButtonText: {
+      color: '#fff', // White text color
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+    
+    pickerContainer: {
+      width: '100%',
+      marginBottom: 15,
+    },
+    picker: {
+      height: 50,
+      width: '100%',
+      borderWidth: 1,
+      borderColor: '#ccc',
+      borderRadius: 8,
+      backgroundColor: '#fff',
+      paddingHorizontal: 10,
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: '#333', // Match text color
+    },
 
 });
 

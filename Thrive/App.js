@@ -5,6 +5,8 @@ import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, TextInput } 
 import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 import styles from './styles'
+import { set } from 'mongoose';
+import { Picker } from '@react-native-picker/picker';
 
 
 const logo = require('./assets/thrivelogo.png');
@@ -23,6 +25,10 @@ export default function App() {
     { id: 3, title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" }
   ]);
 
+
+   //pop up visibility and input state
+  const[companyModalVisible, setCompanyModalVisible] = useState(false);
+  const [companyName, setCompanyName] = useState('');
   const [chatHistory, setChatHistory] = useState([]); // All chats in history
   const [activeChatId, setActiveChatId] = useState(null); // Current chat being viewed
 
@@ -55,48 +61,92 @@ export default function App() {
     await axios.post("http://localhost:3000/query", text); 
   };
 
-  const handleFileUpload = async () => {
+  //show pop up instead of immediate upload
+  const handleFileUpload = () => {
+    setCompanyModalVisible(true);
+  };
+
+  //upload after company name is submitted
+  const handleCompanySubmit = async () => {
+    setCompanyModalVisible(false);
     try {
       const doc = await DocumentPicker.getDocumentAsync({
         type: ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'],
       });
-
       if (doc.type === 'cancel') {
         return;
       }
       console.log(doc)
-
       // uploading files 
       const file = doc.assets[0];
-
       // extract text from txt
       const b64Text = file.uri.slice(23);
       console.log(b64Text.slice(23));
       const cleanText = atob(b64Text);
-
       const uploadDoc = {
         id: uploadedFiles.length + 1, // ensure unique IDs
         title: file.name,
         date: new Date().toLocaleString(),
         notes: cleanText,
+        company: companyName, //include company
       };
 
       // send the document to the backend
       await axios.post("http://localhost:3000/upload", uploadDoc);
-      
+
       setUploadedFiles(prevFiles => [uploadDoc, ...prevFiles]); // ensure state updates correctly
       alert('File uploaded successfully!');
+      setCompanyName(''); //reset company after submission
     } catch (error) {
       console.error("File upload failed:", error);
       alert('Failed to upload the file.');
     }
   };
 
+  // const handleFileUpload = async () => {
+  //   try {
+  //     const doc = await DocumentPicker.getDocumentAsync({
+  //       type: ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'],
+  //     });
+
+  //     if (doc.type === 'cancel') {
+  //       return;
+  //     }
+  //     console.log(doc)
+
+  //     // uploading files 
+  //     const file = doc.assets[0];
+
+  //     // extract text from txt
+  //     const b64Text = file.uri.slice(23);
+  //     console.log(b64Text.slice(23));
+  //     const cleanText = atob(b64Text);
+
+  //     const uploadDoc = {
+  //       id: uploadedFiles.length + 1, // ensure unique IDs
+  //       title: file.name,
+  //       date: new Date().toLocaleString(),
+  //       notes: cleanText,
+  //     };
+
+  //     // send the document to the backend
+  //     await axios.post("http://localhost:3000/upload", uploadDoc);
+      
+  //     setUploadedFiles(prevFiles => [uploadDoc, ...prevFiles]); // ensure state updates correctly
+  //     alert('File uploaded successfully!');
+  //   } catch (error) {
+  //     console.error("File upload failed:", error);
+  //     alert('Failed to upload the file.');
+  //   }
+  // };
+
   return (
 
-    // Start of code to build sidebar
+
 
     <View style={styles.container}>
+
+      {/* Start of building the sidebar */}
       {sidebarVisible && (
         <View style={styles.sidebar}>
           <Text style={styles.sidebarTitle}>History</Text>
@@ -130,6 +180,7 @@ export default function App() {
               </TouchableOpacity>
             )}
           />
+          {/* End of building sidebar */}
         
         {/* Old flatlist for when the sidebar showed test files and chats. */}
 
@@ -151,6 +202,28 @@ export default function App() {
           /> */}
         </View>
       )}
+
+      {/* Popup that is to show when a file is attempted to be uploaded */}
+      {companyModalVisible && (
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalBox}>
+                <Text style={styles.modalTitle}>What is your company?</Text>
+                <Picker
+        selectedValue={companyName}
+        style={styles.picker}
+        onValueChange={(itemValue) => setCompanyName(itemValue)}
+      >
+        <Picker.Item label="Select Company" value="" />  {/* Default option */}
+        <Picker.Item label="Company 1" value="Company 1" />
+        <Picker.Item label="Company 2" value="Company 2" />
+        <Picker.Item label="Company 3" value="Company 3" />
+      </Picker>
+                <TouchableOpacity style={styles.modalButton} onPress={handleCompanySubmit}>
+                  <Text style={styles.modalButtonText}>Continue</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
 
       
       {/* Start of main view that is displayed */}
