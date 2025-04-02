@@ -8,6 +8,7 @@ import styles from './styles'
 import { set } from 'mongoose';
 import { Picker } from '@react-native-picker/picker';
 
+//import FileUploadSummary from './components/FileUploadSummary';
 
 const logo = require('./assets/thrivelogo.png');
 const menuIcon = require('./assets/menu-icon.png'); // sidebar menu icon
@@ -238,7 +239,7 @@ export default function App() {
           Chat ID: None
           </Text>
         <Text style={[styles.standartText, { textAlign: 'center'}, {justifyContent: "flex-start"}, {paddingTop: 1}]}>
-          Press "New Chat Summary" to create a chat!
+          Press "New Notes Summary" to create a chat!
         </Text>
           
         </View>
