@@ -116,6 +116,8 @@ const styles = StyleSheet.create({
     height: 30,
     resizeMode: 'contain',
   },
+
+  // TEXT INPUT BOX 
   textInputContainer: {
     position: 'absolute',
     bottom: 50,
@@ -134,6 +136,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fontFamily, // Consistent font family for text input
   },
+
+  // SEND BUTTON 
   sendIconContainer: {
     marginLeft: 10,
   },
@@ -142,6 +146,8 @@ const styles = StyleSheet.create({
     height: 30,
     resizeMode: 'contain',
   },
+
+  // POP UP BOX FOR COMPANY ASSIGNMENT
   modalOverlay: {
     position: 'absolute',
     top: 0,
@@ -153,7 +159,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 999, 
   },
-  
   modalBox: {
     width: '80%',                   // Increased the width to 80% for a larger box (can be adjusted)
     maxWidth: 800,                  // Added max width for responsiveness
@@ -170,25 +175,25 @@ const styles = StyleSheet.create({
   }, 
   modalButton: {
     marginTop: 20,
-    backgroundColor: 'rgb(41, 61, 122)', // Match button background color
+    backgroundColor: 'rgb(41, 61, 122)', 
     paddingVertical: 12,
-    paddingHorizontal: 30,            // Increased padding for button
+    paddingHorizontal: 30,            
     borderRadius: 8,
     alignItems: 'center',
   },
   modalTitle: {
-    fontSize: 18,                   // Increased font size
+    fontSize: 18,                  
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 20,               // More space below title
+    marginBottom: 20,               
     textAlign: 'center',
-    fontFamily: fontFamily, // Consistent font family for modal title
+    fontFamily: fontFamily, 
   },    
   modalButtonText: {
     color: '#fff', 
-    fontSize: 14,                    // Increased font size for button text
+    fontSize: 14,                    
     fontWeight: 'bold',
-    fontFamily: fontFamily, // Consistent font family for button text
+    fontFamily: fontFamily, 
   },
   
   pickerContainer: {
@@ -205,9 +210,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#333', // Match text color
-    fontFamily: fontFamily, // Consistent font family for picker text
+    color: '#333', 
+    fontFamily: fontFamily, 
   },
+
+
+
+
 });
 
 export default styles;
