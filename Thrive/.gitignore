@@ -37,6 +37,7 @@ yarn-error.*
 
 # .env files
 *.env
+*/Backend/config.env
 
 # python venv files
 */lenv/*
