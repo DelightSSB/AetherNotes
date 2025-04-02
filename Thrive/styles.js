@@ -5,11 +5,24 @@ const fontFamily = 'Arial'; // Replace 'Arial' with your desired font
 
 // styles for all components on the landing/main page 
 const styles = StyleSheet.create({
-  standartText: {
-    fontSize: 20,
+  standardText: {
+    fontSize: 18,
     fontWeight: 'bold',
     fontFamily: fontFamily, // Ensure the font is applied here
   },
+  secondaryText: {
+    fontSize: 18,
+    color:'#666',
+    fontFamily: fontFamily,
+  },
+
+  thirdText: {
+    fontSize: 14, 
+    fontWeight: "bold",
+    color:"#666",
+    fontFamily: fontFamily,
+  },
+
   container: {
     flex: 1,
     flexDirection: 'row',
@@ -28,6 +41,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontFamily: fontFamily, // Consistent font family for sidebar title
   },
+
+
   historyItem: {
     paddingVertical: 8,
     borderBottomWidth: 1,
@@ -58,14 +73,7 @@ const styles = StyleSheet.create({
     height: 80,
     resizeMode: 'contain',
   },
-  fileTypesText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#555',
-    marginBottom: 10,
-    textAlign: 'center',
-    fontFamily: fontFamily, 
-  },
+
   uploadButton: {
     marginTop: 20,
     paddingVertical: 12,
@@ -88,6 +96,7 @@ const styles = StyleSheet.create({
   newChatButtonText: {
     color: '#fff',  
     fontSize: 14,
+    
     fontWeight: 'bold',
     fontFamily: fontFamily, 
   },
@@ -168,7 +177,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalTitle: {
-    fontSize: 24,                   // Increased font size
+    fontSize: 18,                   // Increased font size
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 20,               // More space below title
@@ -177,7 +186,7 @@ const styles = StyleSheet.create({
   },    
   modalButtonText: {
     color: '#fff', 
-    fontSize: 18,                    // Increased font size for button text
+    fontSize: 14,                    // Increased font size for button text
     fontWeight: 'bold',
     fontFamily: fontFamily, // Consistent font family for button text
   },
@@ -194,7 +203,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#fff',
     paddingHorizontal: 10,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#333', // Match text color
     fontFamily: fontFamily, // Consistent font family for picker text

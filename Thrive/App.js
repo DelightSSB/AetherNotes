@@ -17,14 +17,9 @@ const sendIcon = require('./assets/send.png');      // text box icon
 export default function App() {
   // controls the visibility of the sidebar
   const [sidebarVisible, setSidebarVisible] = useState(true);
+
   // stores user input from the text field 
-  const [textInput, setTextInput] = useState(''); 
-  // stores the list of uploaded files 
-  const [uploadedFiles, setUploadedFiles] = useState([
-    { id: 1, title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
-    { id: 2, title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
-    { id: 3, title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" }
-  ]);
+  const [textInput, setTextInput] = useState(""); // State for the text input
 
 
    //pop up visibility and input state
@@ -54,6 +49,7 @@ export default function App() {
     setNewChatView(true); //Ensures the view is automatically changed when the button is pressed
   };
 
+  
   const handleTextChange = async (text) => {
    llama2
     setTextInput(text);
@@ -104,47 +100,7 @@ export default function App() {
     }
   };
 
-  // const handleFileUpload = async () => {
-  //   try {
-  //     const doc = await DocumentPicker.getDocumentAsync({
-  //       type: ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'],
-  //     });
-
-  //     if (doc.type === 'cancel') {
-  //       return;
-  //     }
-  //     console.log(doc)
-
-  //     // uploading files 
-  //     const file = doc.assets[0];
-
-  //     // extract text from txt
-  //     const b64Text = file.uri.slice(23);
-  //     console.log(b64Text.slice(23));
-  //     const cleanText = atob(b64Text);
-
-  //     const uploadDoc = {
-  //       id: uploadedFiles.length + 1, // ensure unique IDs
-  //       title: file.name,
-  //       date: new Date().toLocaleString(),
-  //       notes: cleanText,
-  //     };
-
-  //     // send the document to the backend
-  //     await axios.post("http://localhost:3000/upload", uploadDoc);
-      
-  //     setUploadedFiles(prevFiles => [uploadDoc, ...prevFiles]); // ensure state updates correctly
-  //     alert('File uploaded successfully!');
-  //   } catch (error) {
-  //     console.error("File upload failed:", error);
-  //     alert('Failed to upload the file.');
-  //   }
-  // };
-
   return (
-
-
-
     <View style={styles.container}>
 
       {/* Start of building the sidebar */}
@@ -182,25 +138,6 @@ export default function App() {
             )}
           />
           {/* End of building sidebar */}
-        
-        {/* Old flatlist for when the sidebar showed test files and chats. */}
-
-          {/* <FlatList
-          // flatlist takes upLoadedFiles (array of objects)
-          // each object is a file with properties id, title, date 
-            data={uploadedFiles}
-
-            // each item requires a unique string (#)
-            keyExtractor={(item) => item.id.toString()}
-
-            // render each item from the list 
-            renderItem={({ item }) => (
-              <View style={styles.historyItem}>
-                <Text style={styles.historyText}>{item.title}</Text>
-                <Text style={styles.historyDate}>{item.date}</Text>
-              </View>
-            )}
-          /> */}
         </View>
       )}
 
@@ -235,16 +172,14 @@ export default function App() {
       <View>{newChatView==null && (
         <View>
   
-        <Text style={[styles.standartText, { textAlign: 'center'}, {justifyContent: "flex-start"}, {paddingTop: 1}]}>
+        <Text style={[styles.thirdText, { textAlign: 'center'}, {justifyContent: "flex-start"}, {paddingTop: 1}, {paddingBottom: 1}]}>
           Chat ID: None
           </Text>
-        <Text style={[styles.standartText, { textAlign: 'center'}, {justifyContent: "flex-start"}, {paddingTop: 1}]}>
+        <Text style={[styles.standardText, { textAlign: 'center'}, {justifyContent: "flex-start"}, {paddingTop: 1}]}>
           Press "New Notes Summary" to create a chat!
         </Text>
-          
         </View>
       )}
-      
       </View>
 
 
@@ -253,7 +188,7 @@ export default function App() {
         {newChatView==true && (
         <View>
           {/* To display the current chat the user is looking in (for testing) */}
-          <Text style={[styles.standartText, { textAlign: 'center'}, {justifyContent: "flex-start"}, {paddingTop: 1}]}>
+          <Text style={[styles.thirdText, { textAlign: 'center'}, {justifyContent: "flex-start"}, {paddingTop: 1}]}>
             New Chat ID: {activeChatId}
             </Text>
 
@@ -263,7 +198,7 @@ export default function App() {
           </View>
 
           {/* text indicating allowed file types */}
-          <Text style={styles.fileTypesText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
+          <Text style={styles.thirdText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
 
           {/* button for file upload */}
           <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
@@ -278,7 +213,7 @@ export default function App() {
       {newChatView==false && (
         <View>
           {/* To display the current chat the user is looking in (for testing) */}
-          <Text style={[styles.standartText, { textAlign: 'center'}, {paddingTop: 1},]}>
+          <Text style={[styles.thirdText, { textAlign: 'center'}, {paddingTop: 1},]}>
             This is an old chat with ID: {activeChatId}
             </Text>
 
@@ -288,7 +223,7 @@ export default function App() {
           </View>
 
           {/* text indicating allowed file types */}
-          <Text style={styles.fileTypesText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
+          <Text style={styles.thirdText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
 
           {/* button for file upload */}
           <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
