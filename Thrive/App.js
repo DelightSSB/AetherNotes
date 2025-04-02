@@ -42,7 +42,7 @@ export default function App() {
 
   const summaryReturn = async (text) => {
     try {
-        const response = await axios.post("http://localhost:3000/summary", {
+        const response = await axios.post("http://localhost:3001/summary", {
             text: text 
         });
  
@@ -99,7 +99,7 @@ export default function App() {
 
       summaryReturn(cleanText)
       // send the document to the backend
-      await axios.post("http://localhost:3000/upload", uploadDoc);
+      await axios.post("http://localhost:3001/upload", uploadDoc);
       
       setUploadedFiles(prevFiles => [uploadDoc, ...prevFiles]); // ensure state updates correctly
       alert('File uploaded successfully!');
