@@ -10,6 +10,7 @@ import { Picker } from '@react-native-picker/picker';
 
 //import FileUploadSummary from './components/FileUploadSummary';
 
+
 const logo = require('./assets/thrivelogo.png');
 const menuIcon = require('./assets/menu-icon.png'); // sidebar menu icon
 const sendIcon = require('./assets/send.png');      // text box icon
@@ -35,7 +36,7 @@ export default function App() {
     setSidebarVisible(!sidebarVisible);
   };
 
-  // Creates a new chat. Defaults chat ID to length of histoy, gives the new chat a title, and records the time the chat was made
+  // Creates a new chat. Defaults chat ID to length of history, gives the new chat a title, and records the time the chat was made
   const makeNewChat = () => {
     const chatID = chatHistory.length + 1;
     const newChat = {
@@ -49,14 +50,22 @@ export default function App() {
     setNewChatView(true); //Ensures the view is automatically changed when the button is pressed
   };
 
-  
-  const handleTextChange = async (text) => {
-   llama2
-    setTextInput(text);
+  const summaryReturn = async (text) => {
+    try {
+        const response = await axios.post("http://localhost:3001/summary", {
+            text: text 
+        });
+ 
+        console.log("Response:", response.data.choices[0].message.content); // this is the responce from the AI. It is formatted in markdown
+    } catch (error) {
+        console.error("Error sending summary request:", error);
+    }
+ };
+ 
 
-    // send the document to the backend
-    await axios.post("http://localhost:3000/query", text); 
-  };
+  const handleTextChange = async () => {
+
+  }
 
   //show pop up instead of immediate upload
   const handleFileUpload = () => {
@@ -73,21 +82,38 @@ export default function App() {
       if (doc.type === 'cancel') {
         return;
       }
-      console.log(doc)
-      // uploading files 
+
+
       const file = doc.assets[0];
-      // extract text from txt
-      const b64Text = file.uri.slice(23);
-      console.log(b64Text.slice(23));
-      const cleanText = atob(b64Text);
-      const uploadDoc = {
-        id: uploadedFiles.length + 1, // ensure unique IDs
+      let cleanText;
+      let fileType;
+
+      
+      // switch case for doc types
+      switch(file.mimeType){
+        case "text/plain":
+          const b64Text = file.uri.slice(23);
+          cleanText = atob(b64Text);
+          break;
+        case "application/pdf":
+          cleanText = doc;
+          fileType = "PDF"
+          break;
+        case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+          cleanText = doc;
+          fileType = "docx"
+          break;
+      }
+
+      const uploadDoc = JSON.stringify({
+        id: uploadedFiles.length + 1, 
         title: file.name,
         date: new Date().toLocaleString(),
         notes: cleanText,
-        company: companyName, //include company
-      };
+        type: fileType,
+      });
 
+      summaryReturn(cleanText)
       // send the document to the backend
       await axios.post("http://localhost:3000/upload", uploadDoc);
 
