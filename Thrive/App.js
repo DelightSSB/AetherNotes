@@ -5,6 +5,7 @@ import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, TextInput } 
 import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 import styles from './styles'
+import ChatBox from "./components/chatBox";
 import { set } from 'mongoose';
 import { Picker } from '@react-native-picker/picker';
 
@@ -20,15 +21,19 @@ export default function App() {
 
   // stores user input from the text field 
   const [textInput, setTextInput] = useState(""); // State for the text input
-
+  // stores messages for chatBox
+  const[messages, setMessages] = useState([]);
 
    //pop up visibility and input state
   const[companyModalVisible, setCompanyModalVisible] = useState(false);
+  // Company name storage for backend assignment
   const [companyName, setCompanyName] = useState('');
+
+  //Chats as usestates
   const [chatHistory, setChatHistory] = useState([]); // All chats in history
   const [activeChatId, setActiveChatId] = useState(null); // Current chat being viewed
 
-
+  //View for new chat
   const [newChatView, setNewChatView] = useState(null);
 
   const toggleSidebar = () => {
@@ -42,6 +47,7 @@ export default function App() {
       id: chatID,
       title: `Chat ${chatID}`, //variable to be updated when the popup menu is implemented
       timestamp: new Date().toLocaleString(),
+      summaryResponse: "",
     }; //Creates a new chat object with a unique ID, a title to view on the sidebar, and date on when it was created (saved as a string) 
     
     setChatHistory([newChat, ...chatHistory]); //Adds this newChat object to the chatHistory array (This adds this chat to the beginning of the array rather than the end)
@@ -54,8 +60,19 @@ export default function App() {
         const response = await axios.post("http://localhost:3000/summary", {
             text: text 
         });
- 
-        console.log("Response:", response.data.choices[0].message.content); // this is the responce from the AI. It is formatted in markdown
+
+        //Stores the response as a variable
+        const aiResponse = "Response:"+ response.data.choices[0].message.content
+        // console.log("Response:", response.data.choices[0].message.content); // this is the responce from the AI. It is formatted in markdown
+
+        //Stores ai summary response as the active chat's variable, this is immutably changed so an update should be automatic
+        setChatHistory(prev => 
+          prev.map(chat => 
+            chat.id === activeChatId?
+            {...chat, summaryResponse: aiResponse}
+            : chat
+          )
+        )
     } catch (error) {
         console.error("Error sending summary request:", error);
     }
@@ -229,6 +246,7 @@ export default function App() {
           <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
             <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
           </TouchableOpacity>
+          <ChatBox messages={messages} />
         </View>
         )}
       </View>
@@ -254,6 +272,8 @@ export default function App() {
           <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
             <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
           </TouchableOpacity>
+
+          <ChatBox messages={messages} />
         </View>
         )}
 

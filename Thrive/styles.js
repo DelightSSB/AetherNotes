@@ -214,6 +214,27 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily, 
   },
 
+    // Syles for the chatbox
+    messageBubble: {
+      padding: 10,
+      borderRadius: 10,
+      marginVertical: 5,
+      maxWidth: "75%",
+    },
+
+    userBubble: {
+      backgroundColor: "#DCF8C6",
+      alignSelf: "flex-end",
+    },
+    aiBubble: {
+      backgroundColor: "#EEE",
+      alignSelf: "flex-start",
+    },
+    messageText: {
+      fontSize: 16,
+  },
+  //End of styles for chatbox
+
 
 
 
