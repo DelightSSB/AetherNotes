@@ -1,9 +1,14 @@
+import "@expo/metro-runtime";
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, TextInput } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
+import styles from './styles'
+import { set } from 'mongoose';
+import { Picker } from '@react-native-picker/picker';
 
+//import FileUploadSummary from './components/FileUploadSummary';
 
 
 const logo = require('./assets/thrivelogo.png');
@@ -13,32 +18,37 @@ const sendIcon = require('./assets/send.png');      // text box icon
 export default function App() {
   // controls the visibility of the sidebar
   const [sidebarVisible, setSidebarVisible] = useState(true);
-  // stores user input from the text field 
-  const [textInput, setTextInput] = useState(''); 
-  // stores the list of uploaded files 
-  const [uploadedFiles, setUploadedFiles] = useState([
-    { id: 1, title: "Report.pdf", date: "Feb 20, 2025, 2:30 PM" },
-    { id: 2, title: "Notes.docx", date: "Feb 18, 2025, 11:15 AM" },
-    { id: 3, title: "Summary.txt", date: "Feb 15, 2025, 9:45 AM" }
-  ]);
 
-  const [newChat, createNewChat] = useState(false);
+  // stores user input from the text field 
+  const [textInput, setTextInput] = useState(""); // State for the text input
+
+
+   //pop up visibility and input state
+  const[companyModalVisible, setCompanyModalVisible] = useState(false);
+  const [companyName, setCompanyName] = useState('');
+  const [chatHistory, setChatHistory] = useState([]); // All chats in history
+  const [activeChatId, setActiveChatId] = useState(null); // Current chat being viewed
+
+
+  const [newChatView, setNewChatView] = useState(null);
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
   };
 
+  // Creates a new chat. Defaults chat ID to length of history, gives the new chat a title, and records the time the chat was made
   const makeNewChat = () => {
-    createNewChat(!newChat);
+    const chatID = chatHistory.length + 1;
+    const newChat = {
+      id: chatID,
+      title: `Chat ${chatID}`, //variable to be updated when the popup menu is implemented
+      timestamp: new Date().toLocaleString(),
+    }; //Creates a new chat object with a unique ID, a title to view on the sidebar, and date on when it was created (saved as a string) 
+    
+    setChatHistory([newChat, ...chatHistory]); //Adds this newChat object to the chatHistory array (This adds this chat to the beginning of the array rather than the end)
+    setActiveChatId(chatID); //Sets the active chat to the one just created, ensures the new chat you're editing is the newest one created assuming you stay in the chat
+    setNewChatView(true); //Ensures the view is automatically changed when the button is pressed
   };
-
-  /*
-  This funtion handles the query to the AI and then provides the response. 
-  In order for it to work open a seperate terminal and navigate to the Backend directory and run command 'node server.js'
-  Then once you upload the file it is currently set just to send the response message to console so you can preview it there.
-  Please only use *.txt files. I created one using chat and I will add to the google drive named 'test.txt' if you want to use it!
-  You will also need to add the API key to your config-2.env file so that it will work properly with auth. if you need help just let me know!
-  */
 
   const summaryReturn = async (text) => {
     try {
@@ -57,12 +67,18 @@ export default function App() {
 
   }
 
-  const handleFileUpload = async () => {
+  //show pop up instead of immediate upload
+  const handleFileUpload = () => {
+    setCompanyModalVisible(true);
+  };
+
+  //upload after company name is submitted
+  const handleCompanySubmit = async () => {
+    setCompanyModalVisible(false);
     try {
       const doc = await DocumentPicker.getDocumentAsync({
         type: ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'],
       });
-
       if (doc.type === 'cancel') {
         return;
       }
@@ -99,10 +115,11 @@ export default function App() {
 
       summaryReturn(cleanText)
       // send the document to the backend
-      await axios.post("http://localhost:3001/upload", uploadDoc);
-      
+      await axios.post("http://localhost:3000/upload", uploadDoc);
+
       setUploadedFiles(prevFiles => [uploadDoc, ...prevFiles]); // ensure state updates correctly
       alert('File uploaded successfully!');
+      setCompanyName(''); //reset company after submission
     } catch (error) {
       console.error("File upload failed:", error);
       alert('Failed to upload the file.');
@@ -110,10 +127,9 @@ export default function App() {
   };
 
   return (
-
-    // Start of code to build sidebar
-
     <View style={styles.container}>
+
+      {/* Start of building the sidebar */}
       {sidebarVisible && (
         <View style={styles.sidebar}>
           <Text style={styles.sidebarTitle}>History</Text>
@@ -124,60 +140,91 @@ export default function App() {
         </TouchableOpacity>
 
         
+        <FlatList
+          //This flatlist takes in the array chatHistory which is story the chats created
+          // each object is a file with properties id, title, and timestamp 
+            data={chatHistory}
 
-        
-
-          <FlatList
-          // flatlist takes upLoadedFiles (array of objects)
-          // each object is a file with properties id, title, date 
-            data={uploadedFiles}
             // each item requires a unique string (#)
             keyExtractor={(item) => item.id.toString()}
-            // render each item from the list 
+
+            // renders each items from the chatHistory array and makes them a button to be used to restore their history
             renderItem={({ item }) => (
+              <TouchableOpacity
+              onPress={() => {
+                setActiveChatId(item.id);
+                setNewChatView(false)
+              }}>
+                {/* Displays the title and the date it was created */}
               <View style={styles.historyItem}>
                 <Text style={styles.historyText}>{item.title}</Text>
-                <Text style={styles.historyDate}>{item.date}</Text>
+                <Text style={styles.historyDate}>Created on {item.timestamp}</Text>
               </View>
+              </TouchableOpacity>
             )}
           />
+          {/* End of building sidebar */}
         </View>
       )}
 
-      
+      {/* Popup that is to show when a file is attempted to be uploaded */}
+      {companyModalVisible && (
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalBox}>
+                <Text style={styles.modalTitle}>What is your company?</Text>
+                <Picker
+        selectedValue={companyName}
+        style={styles.picker}
+        onValueChange={(itemValue) => setCompanyName(itemValue)}
+      >
+        <Picker.Item label="Select Company" value="" />  {/* Default option */}
+        <Picker.Item label="Company 1" value="Company 1" />
+        <Picker.Item label="Company 2" value="Company 2" />
+        <Picker.Item label="Company 3" value="Company 3" />
+      </Picker>
+                <TouchableOpacity style={styles.modalButton} onPress={handleCompanySubmit}>
+                  <Text style={styles.modalButtonText}>Continue</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
 
+      
+      {/* Start of main view that is displayed */}
       <View style={styles.mainContent}> 
 
-        {/*View that's shown when the "new chat" button is pressed */}
-      <View>
-        {newChat && (
-        <View style={styles.newChatScreen}>
-          <Text style={styles.newChatText}>Choose to manually insert notes or upload a file</Text>
-          <TouchableOpacity style={styles.manualNotes}>
-          <Text style={styles.uploadButtonText}>MANUAL NOTES INPUT</Text>
-            </TouchableOpacity>
 
-          <TouchableOpacity style={styles.manualNotes} onPress={handleFileUpload}>
-          <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
-            </TouchableOpacity>
+      {/* This view is displayed when the user first loads the page */}
+      <View>{newChatView==null && (
+        <View>
+  
+        <Text style={[styles.thirdText, { textAlign: 'center'}, {justifyContent: "flex-start"}, {paddingTop: 1}, {paddingBottom: 1}]}>
+          Chat ID: None
+          </Text>
+        <Text style={[styles.standardText, { textAlign: 'center'}, {justifyContent: "flex-start"}, {paddingTop: 1}]}>
+          Press "New Notes Summary" to create a chat!
+        </Text>
         </View>
-        )}
+      )}
       </View>
 
-        {/* sidebar menu button to toggle visibility */}
-        <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
-          <Image source={menuIcon} style={styles.menuIcon} />
-        </TouchableOpacity>
 
-        {!newChat && (
+      {/*newChat == true */}
+      <View>
+        {newChatView==true && (
         <View>
+          {/* To display the current chat the user is looking in (for testing) */}
+          <Text style={[styles.thirdText, { textAlign: 'center'}, {justifyContent: "flex-start"}, {paddingTop: 1}]}>
+            New Chat ID: {activeChatId}
+            </Text>
+
           {/* logo container */}
           <View style={styles.logoContainer}>
           <Image source={logo} style={styles.logo} />
           </View>
 
           {/* text indicating allowed file types */}
-          <Text style={styles.fileTypesText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
+          <Text style={styles.thirdText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
 
           {/* button for file upload */}
           <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
@@ -185,6 +232,39 @@ export default function App() {
           </TouchableOpacity>
         </View>
         )}
+      </View>
+
+
+      {/* newChat == false */}
+      {newChatView==false && (
+        <View>
+          {/* To display the current chat the user is looking in (for testing) */}
+          <Text style={[styles.thirdText, { textAlign: 'center'}, {paddingTop: 1},]}>
+            This is an old chat with ID: {activeChatId}
+            </Text>
+
+          {/* logo container */}
+          <View style={styles.logoContainer}>
+          <Image source={logo} style={styles.logo} />
+          </View>
+
+          {/* text indicating allowed file types */}
+          <Text style={styles.thirdText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
+
+          {/* button for file upload */}
+          <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
+            <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
+          </TouchableOpacity>
+        </View>
+        )}
+
+
+        {/* sidebar menu button to toggle visibility */}
+        <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
+          <Image source={menuIcon} style={styles.menuIcon} />
+        </TouchableOpacity>
+
+        
 
         {/* text input field to enter user input */}
         <View style={styles.textInputContainer}>
@@ -207,150 +287,3 @@ export default function App() {
 
   
 }
-
-// // (INCOMPLETE) Create a new chat function, called when the "new chat" button is pressed
-// const makeNewChat = () => {
-//   newChat = true
-//   }
-
-// styles for all components on the landing/main page 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'rgb(199, 200, 216)', // background color for the whole screen
-  },
-  sidebar: {
-    width: 250,
-    backgroundColor: 'rgba(244, 244, 244, .5)', // semi-transparent background for sidebar 
-    padding: 15,
-    borderRightWidth: 1,
-    borderRightColor: '#ccc',
-  },
-  sidebarTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  historyItem: {
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',  // border separating each file item
-  },
-  historyText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  historyDate: {
-    fontSize: 12,
-    color: '#666',  // lighter color for the date text
-  },
-  mainContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingBottom: 20,
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  logo: {
-    width: 200,
-    height: 80,
-    resizeMode: 'contain',
-  },
-  fileTypesText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#555',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  uploadButton: {
-    marginTop: 20,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    backgroundColor: 'rgb(41, 61, 122)',
-    // backgroundColor: '#000', // black background for button 
-    borderRadius: 8,
-    alignItems: 'center'
-  },
-  newChatText: {
-    fontSize: 18, // Make it more readable
-    fontWeight: "bold",
-    marginBottom: 15, // Adds space between text & buttons
-    textAlign: "center",
-  },
-
-    newChatScreen: {
-      flexDirection: "column", // Places buttons side by side
-      justifyContent: "center", // Centers horizontally
-      alignItems: "center", // Aligns buttons vertically
-      marginTop: "50%", // Adjust this value to move them to the vertical center
-    },
-
-    manualNotes: {
-      marginTop: 20,
-      paddingVertical: 12,
-      paddingHorizontal: 20,
-      backgroundColor: 'rgb(41, 61, 122)',
-      // backgroundColor: '#000', // black background for button 
-      borderRadius: 8,
-      marginHorizontal: 15
-  },
-  newChatButton: {
-    marginTop: 10,
-    backgroundColor: 'rgb(41, 61, 122)',
-    paddingVertical: 22,
-    paddingHorizontal: 20,
-    // backgroundColor: '#000', // black background for button 
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  newChatButtonText: {
-    color: '#fff',  
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  uploadButtonText: {
-    color: '#fff',  // white text color on the button
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  menuButton: {
-    position: 'absolute',
-    top: 20,
-    left: 20,
-  },
-  menuIcon: {
-    width: 30,
-    height: 30,
-    resizeMode: 'contain',
-  },
-  textInputContainer: {
-    position: 'absolute',
-    bottom: 50,
-    width: '80%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  textInput: {
-    flex: 1,
-    padding: 10,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    fontSize: 16,
-  },
-  sendIconContainer: {
-    marginLeft: 10,
-  },
-  sendIcon: {
-    width: 30,
-    height: 30,
-    resizeMode: 'contain',
-  },
-});
