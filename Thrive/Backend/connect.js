@@ -1,5 +1,5 @@
 const { MongoClient, Collection, ServerApiVersion } = require("mongodb")
-require("dotenv").config({path: "./config-2.env"})
+require("dotenv").config({path: "./config.env"})
 
 const db = process.env.ATLAS_URI
 

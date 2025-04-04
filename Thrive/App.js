@@ -6,6 +6,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 import styles from './styles'
 import ChatBox from "./components/chatBox";
+import AISummary from "./components/chatBox";
 import { set } from 'mongoose';
 import { Picker } from '@react-native-picker/picker';
 
@@ -22,7 +23,7 @@ export default function App() {
   // stores user input from the text field 
   const [textInput, setTextInput] = useState(""); // State for the text input
   // stores messages for chatBox
-  const[messages, setMessages] = useState([]);
+  const[messages, setMessages] = useState([]); //array of the messages saves for a chat
 
    //pop up visibility and input state
   const[companyModalVisible, setCompanyModalVisible] = useState(false);
@@ -48,6 +49,18 @@ export default function App() {
       title: `Chat ${chatID}`, //variable to be updated when the popup menu is implemented
       timestamp: new Date().toLocaleString(),
       summaryResponse: "",
+
+      //These are the test case messages to help build the chatBox
+      chatMessages: [
+      {
+        sender: "user",
+        message: "Here's what I need..."
+      },
+      {
+        sender: "ai",
+        message: "What can I help with today?"
+      }
+    ]
     }; //Creates a new chat object with a unique ID, a title to view on the sidebar, and date on when it was created (saved as a string) 
     
     setChatHistory([newChat, ...chatHistory]); //Adds this newChat object to the chatHistory array (This adds this chat to the beginning of the array rather than the end)
@@ -62,17 +75,18 @@ export default function App() {
         });
 
         //Stores the response as a variable
-        const aiResponse = "Response:"+ response.data.choices[0].message.content
-        // console.log("Response:", response.data.choices[0].message.content); // this is the responce from the AI. It is formatted in markdown
+        
+        console.log("Response:", response.data.choices[0].message.content); // this is the responce from the AI. It is formatted in markdown
 
         //Stores ai summary response as the active chat's variable, this is immutably changed so an update should be automatic
-        setChatHistory(prev => 
-          prev.map(chat => 
-            chat.id === activeChatId?
-            {...chat, summaryResponse: aiResponse}
-            : chat
-          )
-        )
+        // const aiResponse = "Response:"+ response.data.choices[0].message.content
+        // setChatHistory(prev => 
+        //   prev.map(chat => 
+        //     chat.id === activeChatId?
+        //     {...chat, summaryResponse: aiResponse}
+        //     : chat
+        //   )
+        // )
     } catch (error) {
         console.error("Error sending summary request:", error);
     }
@@ -226,35 +240,49 @@ export default function App() {
 
 
       {/*newChat == true */}
-      <View>
-        {newChatView==true && (
-        <View>
-          {/* To display the current chat the user is looking in (for testing) */}
-          <Text style={[styles.thirdText, { textAlign: 'center'}, {justifyContent: "flex-start"}, {paddingTop: 1}]}>
-            New Chat ID: {activeChatId}
-            </Text>
 
-          {/* logo container */}
-          <View style={styles.logoContainer}>
-          <Image source={logo} style={styles.logo} />
+        {newChatView==true && (
+          
+        <View>  
+          <View>
+            {/* To display the current chat the user is looking in (for testing) */}
+            <Text style={[styles.thirdText, { textAlign: 'center'}, {justifyContent: "flex-start"}, {paddingTop: 1}]}>
+              New Chat ID: {activeChatId}
+              </Text>
+
+            {/* logo container */}
+            <View style={styles.logoContainer}>
+            <Image source={logo} style={styles.logo} />
+            </View>
+
+            {/* text indicating allowed file types */}
+            <Text style={styles.thirdText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
+
+            {/* button for file upload */}
+            <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
+              <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
+            </TouchableOpacity>
           </View>
 
-          {/* text indicating allowed file types */}
-          <Text style={styles.thirdText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
-
-          {/* button for file upload */}
-          <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
-            <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
-          </TouchableOpacity>
-          <ChatBox messages={messages} />
+          <View style={styles.chatContainer}>
+          <AISummary
+            summary={
+            chatHistory.find(chat => chat.id === activeChatId)?.summaryResponse || ""
+            }
+          />
+          <ChatBox messages={
+            chatHistory.find(chat => chat.id === activeChatId)?.chatMessages || []
+          } />
+          </View>
         </View>
         )}
-      </View>
 
 
       {/* newChat == false */}
       {newChatView==false && (
-        <View>
+        
+        <View> 
+          <View>
           {/* To display the current chat the user is looking in (for testing) */}
           <Text style={[styles.thirdText, { textAlign: 'center'}, {paddingTop: 1},]}>
             This is an old chat with ID: {activeChatId}
@@ -272,9 +300,20 @@ export default function App() {
           <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
             <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
           </TouchableOpacity>
+          </View>
 
-          <ChatBox messages={messages} />
+          <View style={{flex: 1}}>
+          <AISummary
+            summary={
+            chatHistory.find(chat => chat.id === activeChatId)?.summaryResponse || ""
+            }
+          />
+          <ChatBox messages={
+            chatHistory.find(chat => chat.id === activeChatId)?.chatMessages || []
+          } />
+          </View>
         </View>
+        
         )}
 
 

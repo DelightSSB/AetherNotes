@@ -1,6 +1,6 @@
 const express = require("express");
 const axios = require("axios");
-require("dotenv").config({ path: "./config-2.env" });
+require("dotenv").config({ path: "./config.env" });
 
 let queryRoute = express.Router();
 

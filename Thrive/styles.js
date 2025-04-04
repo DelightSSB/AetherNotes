@@ -215,6 +215,13 @@ const styles = StyleSheet.create({
   },
 
     // Syles for the chatbox
+    chatContainer: {
+      flex: 1,
+      justifyContent: "flex-end", // 👈 Pushes messages to bottom
+      paddingHorizontal: 10,
+      paddingBottom: 60, // 👈 Make room above input bar
+    },
+    
     messageBubble: {
       padding: 10,
       borderRadius: 10,
