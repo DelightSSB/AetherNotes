@@ -25,13 +25,12 @@ export default function chatBox({ messages }){
     );
 }
 
-export function AISummary(){
+export function AISummary({ summary }){
     return(
         <View
-            style={[styles.messageBubble, styles.userBubble]}
+            style={[styles.messageBubble, styles.aiBubble]}
             >
-                <Text style={styles.messageText}>{chat.summaryResponse}</Text>
+                <Text style={styles.messageText}>{summary}</Text>
             </View>
     )
 }
-

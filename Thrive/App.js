@@ -7,6 +7,7 @@ import axios from 'axios';
 import styles from './styles'
 import ChatBox from "./components/chatBox";
 import AISummary from "./components/chatBox";
+import Sidebar from "./components/Sidebar";
 import { set } from 'mongoose';
 import { Picker } from '@react-native-picker/picker';
 
@@ -74,10 +75,10 @@ export default function App() {
             text: text 
         });
 
-        //Stores the response as a variable
+        
         
         console.log("Response:", response.data.choices[0].message.content); // this is the responce from the AI. It is formatted in markdown
-
+        //Stores the response as a variable
         //Stores ai summary response as the active chat's variable, this is immutably changed so an update should be automatic
         // const aiResponse = "Response:"+ response.data.choices[0].message.content
         // setChatHistory(prev => 
@@ -161,40 +162,12 @@ export default function App() {
 
       {/* Start of building the sidebar */}
       {sidebarVisible && (
-        <View style={styles.sidebar}>
-          <Text style={styles.sidebarTitle}>History</Text>
-
-          {/*Code for "new chat" buttons */}
-          <TouchableOpacity style={styles.newChatButton} onPress={makeNewChat}>
-          <Text style={styles.newChatButtonText}>New Notes Summary</Text>
-        </TouchableOpacity>
-
-        
-        <FlatList
-          //This flatlist takes in the array chatHistory which is story the chats created
-          // each object is a file with properties id, title, and timestamp 
-            data={chatHistory}
-
-            // each item requires a unique string (#)
-            keyExtractor={(item) => item.id.toString()}
-
-            // renders each items from the chatHistory array and makes them a button to be used to restore their history
-            renderItem={({ item }) => (
-              <TouchableOpacity
-              onPress={() => {
-                setActiveChatId(item.id);
-                setNewChatView(false)
-              }}>
-                {/* Displays the title and the date it was created */}
-              <View style={styles.historyItem}>
-                <Text style={styles.historyText}>{item.title}</Text>
-                <Text style={styles.historyDate}>Created on {item.timestamp}</Text>
-              </View>
-              </TouchableOpacity>
-            )}
-          />
-          {/* End of building sidebar */}
-        </View>
+        <Sidebar
+        chatHistory = {chatHistory}
+        setActiveChatId = {setActiveChatId}
+        setNewChatView = {setNewChatView}
+        makeNewChat = {makeNewChat}
+        />
       )}
 
       {/* Popup that is to show when a file is attempted to be uploaded */}
