@@ -10,10 +10,8 @@ let db = database.getDB()
 let mongoObject = {
     id: reqeust.body.id,
     title: reqeust.body.title,
-    //client:reqeust.body.client,
-    //author:reqeust.body.author,
-    //participants:reqeust.body.participants,
-    date:reqeust.body.date,
+    client: reqeust.body.client,
+    date: reqeust.body.date,
     notes: reqeust.body.notes,
 }
 let data = await db.collection("MeetingNotes").insertOne(mongoObject)

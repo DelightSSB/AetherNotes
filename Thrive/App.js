@@ -8,7 +8,6 @@ import styles from './styles'
 import { set } from 'mongoose';
 import { Picker } from '@react-native-picker/picker';
 
-//import FileUploadSummary from './components/FileUploadSummary';
 
 
 const logo = require('./assets/thrivelogo.png');
@@ -52,7 +51,7 @@ export default function App() {
 
   const summaryReturn = async (text) => {
     try {
-        const response = await axios.post("http://localhost:3001/summary", {
+        const response = await axios.post("http://localhost:3000/summary", {
             text: text 
         });
  
@@ -105,19 +104,19 @@ export default function App() {
           break;
       }
 
-      const uploadDoc = JSON.stringify({
-        id: uploadedFiles.length + 1, 
+      const uploadDoc = {
+        id: 10, 
         title: file.name,
+        client: companyName,
         date: new Date().toLocaleString(),
         notes: cleanText,
-        type: fileType,
-      });
+      };
+      console.log(uploadDoc)
 
       summaryReturn(cleanText)
       // send the document to the backend
       await axios.post("http://localhost:3000/upload", uploadDoc);
 
-      setUploadedFiles(prevFiles => [uploadDoc, ...prevFiles]); // ensure state updates correctly
       alert('File uploaded successfully!');
       setCompanyName(''); //reset company after submission
     } catch (error) {
