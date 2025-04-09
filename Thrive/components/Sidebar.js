@@ -1,8 +1,8 @@
 import React from "react";
-import { FlatList, View, Text, StyleSheet } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, TextInput } from 'react-native';
 import styles from "../styles";
 
-export default function Sidebar(){
+export default function Sidebar({chatHistory, makeNewChat, setActiveChatId, setNewChatView}){
 return(
 <View style={styles.sidebar}>
           <Text style={styles.sidebarTitle}>History</Text>

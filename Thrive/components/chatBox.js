@@ -2,10 +2,11 @@ import React from "react";
 import { FlatList, View, Text, StyleSheet } from "react-native";
 import styles from "../styles";
 
-export default function chatBox({ messages }){
+export default function ChatBox({ messages }){
     return(
+
+        <View style={styles.chatContainer}>
         <FlatList
-        inverted={true}
         data = {messages}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
@@ -22,6 +23,7 @@ export default function chatBox({ messages }){
                 justifyContent: "flex-end"
             }}
         />
+        </View>
     );
 }
 

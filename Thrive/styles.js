@@ -59,10 +59,9 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily, // Consistent font family for date
   },
   mainContent: {
+    // flexDirection: 'row',
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingBottom: 20,
+    alignItems: "center",
   },
   logoContainer: {
     alignItems: 'center',
@@ -123,14 +122,14 @@ const styles = StyleSheet.create({
     bottom: 50,
     width: '80%',
     flexDirection: 'row',
-    alignItems: 'center',
+    alignSelf: 'center',
     justifyContent: 'center',
   },
   textInput: {
     flex: 1,
     padding: 10,
     backgroundColor: '#fff',
-    borderRadius: 8,
+    borderRadius: 18,
     borderWidth: 1,
     borderColor: '#ccc',
     fontSize: 16,
@@ -219,30 +218,31 @@ const styles = StyleSheet.create({
       flex: 1,
       justifyContent: "flex-end", 
       paddingHorizontal: 10,
-      paddingBottom: 60, 
+      paddingBottom: 100, 
     },
     
     messageBubble: {
       padding: 10,
       borderRadius: 10,
-      marginVertical: 5,
+      marginVertical: 10,
+      // marginHorizontal: 120,
       maxWidth: "75%",
     },
 
     userBubble: {
       backgroundColor: "#DCF8C6",
       alignSelf: "flex-end",
+      marginLeft: 280
     },
     aiBubble: {
       backgroundColor: "#EEE",
       alignSelf: "flex-start",
+      marginRight: 300
     },
     messageText: {
       fontSize: 16,
   },
   //End of styles for chatbox
-
-
 
 
 });
