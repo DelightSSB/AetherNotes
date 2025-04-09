@@ -7,6 +7,9 @@ import axios from 'axios';
 import styles from './styles'
 import { set } from 'mongoose';
 import { Picker } from '@react-native-picker/picker';
+import pdfToText from "react-pdftotext";
+
+var mammoth = require("mammoth");
 
 
 
@@ -95,13 +98,33 @@ export default function App() {
           cleanText = atob(b64Text);
           break;
         case "application/pdf":
-          cleanText = doc;
-          fileType = "PDF"
+          
           break;
         case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-          cleanText = doc;
-          fileType = "docx"
-          break;
+            try {
+              const response = await fetch(file.uri);
+              const blob = await response.blob();
+              const reader = new FileReader();
+          
+              cleanText = await new Promise((resolve, reject) => {
+                reader.onload = function(event) {
+                  const arrayBuffer = event.target.result;
+          
+                  mammoth.extractRawText({ arrayBuffer })
+                    .then(result => resolve(result.value))
+                    .catch(err => reject(err));
+                };
+          
+                reader.onerror = () => reject(new Error("File reading failed"));
+          
+                reader.readAsArrayBuffer(blob);
+              });
+            } catch (error) {
+              console.error("Error extracting text:", error);
+              return null;
+            }
+            break;
+          
       }
 
       const uploadDoc = {
