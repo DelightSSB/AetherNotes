@@ -123,6 +123,26 @@ export default function App() {
     setCompanyModalVisible(true);
   };
 
+  const handleSendMessage = () => {
+    if (!textInput.trim()) return; // Don't send empty messages
+  
+    const newMessage = {
+      sender: "user",
+      message: textInput.trim()
+    };
+  
+    // Add the message to the active chat
+    setChatHistory(prevChats =>
+      prevChats.map(chat =>
+        chat.id === activeChatId
+          ? { ...chat, chatMessages: [...chat.chatMessages, newMessage] }
+          : chat
+      )
+    );
+  
+    setTextInput(""); // Clear input after sending
+  };
+
   //upload after company name is submitted
   const handleCompanySubmit = async () => {
     setCompanyModalVisible(false);
@@ -261,6 +281,7 @@ export default function App() {
         <TextBox
         textInput={textInput}
         handleTextChange={handleTextChange}
+        handleSend={handleSendMessage}
         sendIcon={sendIcon}
         />
       </View>

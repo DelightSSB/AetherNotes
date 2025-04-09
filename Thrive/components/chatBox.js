@@ -20,7 +20,7 @@ export default function ChatBox({ messages }){
             )}
             contentContainerStyle={{
                 flexGrow: 1,
-                justifyContent: "flex-end"
+                justifyContent: "center"
             }}
         />
         </View>

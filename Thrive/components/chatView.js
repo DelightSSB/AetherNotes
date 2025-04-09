@@ -72,17 +72,21 @@ export function OldChatView({activeChatId, logo, handleFileUpload}){
 }
 
 //Textbox at the bottom
-export function TextBox ({handleTextChange, sendIcon, textInput}){
+export function TextBox ({handleTextChange, sendIcon, textInput, handleSend}){
     return(
         <View style={styles.textInputContainer}>
           <TextInput
-            style={styles.textInput}
-            placeholder="What do you need?"
-            value={textInput}
-            onChangeText={handleTextChange} // updates the text input value in the state
+
+          editable
+          style={styles.textInput}
+          placeholder="What do you need?"
+          value={textInput}
+          onChangeText={handleTextChange} // updates the text input value in the state
+          onSubmitEditing={handleSend} // Pressing "Enter" triggers send
+
           />
           {/* send icon button next to the text input box */}
-          <TouchableOpacity style={styles.sendIconContainer}>
+          <TouchableOpacity style={styles.sendIconContainer} onPress={handleSend}>
             <Image source={sendIcon} style={styles.sendIcon} />
           </TouchableOpacity>
           {/*auto prop adjusts the status bar styling based on the background of the screen*/}
