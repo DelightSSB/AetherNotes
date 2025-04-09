@@ -46,5 +46,5 @@ promptRoute.route("/prompt").post(async (request, response) => {
         }
     });
     
-    module.exports = queryRoute;
+    module.exports = promptRoute;
 
