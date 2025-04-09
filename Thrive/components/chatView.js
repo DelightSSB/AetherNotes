@@ -22,7 +22,13 @@ export function LaunchView({}){
 export function NewChatView({activeChatId, logo, handleFileUpload}){
     return(
   
-          <View style={{flexShrink: 0}}>
+          <View style={{
+            position: "absolute",
+            width: "25%", 
+            alignSelf: "center",
+            top: 50
+
+            }}>
             {/* To display the current chat the user is looking in (for testing) */}
             <Text style={[styles.thirdText, { textAlign: 'center'}, {paddingTop: 1}]}>
               New Chat ID: {activeChatId}
@@ -72,17 +78,17 @@ export function OldChatView({activeChatId, logo, handleFileUpload}){
 }
 
 //Textbox at the bottom
-export function TextBox ({handleTextChange, sendIcon, textInput, handleSend}){
+export function TextBox ({textInput, sendIcon, setTextInput, handleSend, inputRef}){
     return(
         <View style={styles.textInputContainer}>
           <TextInput
 
-          editable
+          ref={inputRef}
           style={styles.textInput}
           placeholder="What do you need?"
           value={textInput}
-          onChangeText={handleTextChange} // updates the text input value in the state
-          onSubmitEditing={handleSend} // Pressing "Enter" triggers send
+          onChangeText={(val) => setTextInput(val)}
+          onSubmitEditing={handleSend } // Pressing "Enter" triggers send
 
           />
           {/* send icon button next to the text input box */}

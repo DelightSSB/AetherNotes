@@ -59,9 +59,8 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily, // Consistent font family for date
   },
   mainContent: {
-    // flexDirection: 'row',
     flex: 1,
-    alignItems: "center",
+    alignItems: "stretch",
   },
   logoContainer: {
     alignItems: 'center',
@@ -119,19 +118,18 @@ const styles = StyleSheet.create({
   // TEXT INPUT BOX 
   textInputContainer: {
     position: 'absolute',
+    alignSelf: "center",
     bottom: 50,
     width: '80%',
     flexDirection: 'row',
-    alignSelf: 'center',
-    justifyContent: 'center',
   },
   textInput: {
     flex: 1,
     padding: 10,
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
     borderRadius: 18,
-    borderWidth: 1,
-    borderColor: '#ccc',
+    borderWidth: 4,
+    borderColor: '#293D74',
     fontSize: 16,
     fontFamily: fontFamily, // Consistent font family for text input
   },
@@ -215,10 +213,13 @@ const styles = StyleSheet.create({
 
     // Syles for the chatbox
     chatContainer: {
-      flex: 1,
-      justifyContent: "flex-end", 
-      paddingHorizontal: 10,
-      paddingBottom: 100, 
+      flexGrow: 0,
+      
+      position: "relative",
+      alignSelf: "center",
+      top: 350,
+      maxHeight: 800,
+      width: "80%",
     },
     
     messageBubble: {
@@ -232,12 +233,12 @@ const styles = StyleSheet.create({
     userBubble: {
       backgroundColor: "#DCF8C6",
       alignSelf: "flex-end",
-      marginLeft: 280
+      marginRight: 40
     },
     aiBubble: {
       backgroundColor: "#EEE",
       alignSelf: "flex-start",
-      marginRight: 300
+      marginRight: 50
     },
     messageText: {
       fontSize: 16,

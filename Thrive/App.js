@@ -1,7 +1,7 @@
 import "@expo/metro-runtime";
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, TextInput } from 'react-native';
+import { useState, useRef } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, TextInput,  } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 import styles from './styles'
@@ -44,17 +44,23 @@ export default function App() {
     setSidebarVisible(!sidebarVisible);
   };
 
+  const textInputRef = useRef(null); //used to refocus onto chat
   // Creates a new chat. Defaults chat ID to length of history, gives the new chat a title, and records the time the chat was made
   const makeNewChat = () => {
     const chatID = chatHistory.length + 1;
+    const summaryResponse = "Summary test"
     const newChat = {
       id: chatID,
       title: `Chat ${chatID}`, //variable to be updated when the popup menu is implemented
       timestamp: new Date().toLocaleString(),
-      summaryResponse: "",
+      summaryResponse,
 
       //These are the test case messages to help build the chatBox
       chatMessages: [
+        {
+          sender: "ai",
+          message: summaryResponse
+        },
       
       {
         sender: "ai",
@@ -79,7 +85,8 @@ export default function App() {
       {
         sender: "ai",
         message: "Ahh I gotcha, let's do this..."
-      }
+      },
+      
 
     ]
     }; //Creates a new chat object with a unique ID, a title to view on the sidebar, and date on when it was created (saved as a string) 
@@ -112,11 +119,6 @@ export default function App() {
         console.error("Error sending summary request:", error);
     }
  };
- 
-
-  const handleTextChange = async () => {
-
-  }
 
   //show pop up instead of immediate upload
   const handleFileUpload = () => {
@@ -141,6 +143,7 @@ export default function App() {
     );
   
     setTextInput(""); // Clear input after sending
+    textInputRef.current?.focus();
   };
 
   //upload after company name is submitted
@@ -211,7 +214,13 @@ export default function App() {
       )}
 
 
-      {/* Popup that is to show when a file is attempted to be uploaded, allows the user to set their company for organization */}
+      
+
+      
+      {/* Main displayed content */}
+      <View style={[styles.mainContent]}> 
+
+        {/* Popup that is to show when a file is attempted to be uploaded, allows the user to set their company for organization */}
       {companyModalVisible && (
         <CompanyPopup
         companyName = {companyName}
@@ -220,9 +229,11 @@ export default function App() {
         />
       )}
 
+      {/* sidebar menu button to toggle visibility */}
+      <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
+        <Image source={menuIcon} style={styles.menuIcon} />
+      </TouchableOpacity>
       
-      {/* Main displayed content */}
-      <View style={[styles.mainContent,{flexDirection: "column"}]}> 
       {/* This view is displayed when the user first loads the page */}
       <View>{newChatView==null && (
         <LaunchView/>
@@ -232,22 +243,22 @@ export default function App() {
 
       {/*Looking at a new chat */}
         {newChatView==true && (
-        <View style={{flex: 1}}>
+        <View>
+          
+
+          <View>
+            <ChatBox messages={
+              chatHistory.find(chat => chat.id === activeChatId)?.chatMessages || []
+            } summary={chatHistory.find(chat => chat.id === activeChatId)?.summaryResponse || ""
+            } />
+
+          </View>
+
           <NewChatView
           activeChatId = {activeChatId}
           logo = {logo}
           handleFileUpload = {handleFileUpload}
           />
-
-            <AISummary
-              summary={
-              chatHistory.find(chat => chat.id === activeChatId)?.summaryResponse || ""
-              }
-            />
-            <ChatBox messages={
-              chatHistory.find(chat => chat.id === activeChatId)?.chatMessages || []
-            } />
-
           
         </View>
         )}
@@ -255,34 +266,33 @@ export default function App() {
 
       {/* Looking at an old chat */}
         {newChatView==false && (
-          <View style={{flex: 1}}>
+          <View>
           <OldChatView
             activeChatId = {activeChatId}
             logo = {logo}
             handleFileUpload = {handleFileUpload}
           />
-            <AISummary
-              summary={
-              chatHistory.find(chat => chat.id === activeChatId)?.summaryResponse || ""
-              }
-            />
+
             <ChatBox messages={
               chatHistory.find(chat => chat.id === activeChatId)?.chatMessages || []
+            } summary={chatHistory.find(chat => chat.id === activeChatId)?.summaryResponse || ""
             } />
+
           </View>
           )}
 
         {/* sidebar menu button to toggle visibility */}
-        <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
+        {/* <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
           <Image source={menuIcon} style={styles.menuIcon} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         {/* text input field to enter user input */}
         <TextBox
+        setTextInput={setTextInput}
         textInput={textInput}
-        handleTextChange={handleTextChange}
         handleSend={handleSendMessage}
         sendIcon={sendIcon}
+        inputRef={textInputRef}
         />
       </View>
     </View>

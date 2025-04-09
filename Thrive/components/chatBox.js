@@ -1,38 +1,43 @@
-import React from "react";
-import { FlatList, View, Text, StyleSheet } from "react-native";
+import React, { useRef, useEffect } from "react";
+import { FlatList, View, Text } from "react-native";
 import styles from "../styles";
 
-export default function ChatBox({ messages }){
+export default function ChatBox({ messages}){
+    
+    const flatListRef = useRef(null);
+
+    useEffect(() => {
+        if (flatListRef.current) {
+          flatListRef.current.scrollToEnd({ animated: true });
+        }
+      }, [messages]);
+
     return(
 
+        <View style={{flexDirection: "row", justifyContent: "center",}}>
         <View style={styles.chatContainer}>
-        <FlatList
-        data = {messages}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-            <View
-            style={[styles.messageBubble,
-                item.sender === "user" ? styles.userBubble : styles.aiBubble
-            ]}
-            >
-                <Text style={styles.messageText}>{item.message}</Text>
-            </View>
-            )}
-            contentContainerStyle={{
-                flexGrow: 1,
-                justifyContent: "center"
-            }}
-        />
+
+            {/* Displays the summary first then displays the rest of the chat */}
+            <FlatList
+            ref={flatListRef}
+            data = {messages}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+                <View
+                style={[styles.messageBubble,
+                    item.sender === "user" ? styles.userBubble : styles.aiBubble
+                ]}
+                >
+                    <Text style={styles.messageText}>{item.message}</Text>
+                </View>
+                )}
+                style={{flexGrow: 1,}}
+                contentContainerStyle={{
+                    justifyContent: "flex-end"
+                    // justifyContent: "center"
+                }}
+            />
+        </View>
         </View>
     );
-}
-
-export function AISummary({ summary }){
-    return(
-        <View
-            style={[styles.messageBubble, styles.aiBubble]}
-            >
-                <Text style={styles.messageText}>{summary}</Text>
-            </View>
-    )
 }
