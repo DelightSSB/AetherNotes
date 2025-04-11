@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, } from 'react-native';
 import * as DocumentPicker from 'react-native-document-picker';
 import * as FileSystem from 'react-native-fs';
 
@@ -37,26 +37,26 @@ const FileUploadSummary = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Upload a File</Text>
+    <View style={fileSummary.container}>
+      <Text style={fileSummary.title}>Upload a File</Text>
 
       {/* Button to trigger file upload */}
-      <TouchableOpacity onPress={handleFileUpload} style={styles.uploadButton}>
+      <TouchableOpacity onPress={handleFileUpload} style={fileSummary.uploadButton}>
         <Text style={styles.uploadButtonText}>Choose File</Text>
       </TouchableOpacity>
 
       {/* Display file summary */}
       {summary && (
-        <View style={styles.summaryContainer}>
-          <Text style={styles.summaryTitle}>File Summary:</Text>
-          <Text style={styles.summaryText}>{summary}</Text>
+        <View style={fileSummary.summaryContainer}>
+          <Text style={fileSummary.summaryTitle}>File Summary:</Text>
+          <Text style={fileSummary.summaryText}>{summary}</Text>
         </View>
       )}
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+const fileSummary = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',

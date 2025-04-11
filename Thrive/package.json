@@ -1,7 +1,7 @@
 {
   "name": "thrive",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -25,7 +25,7 @@
     "gridfs-stream": "^1.1.1",
     "mammoth": "^1.9.0",
     "mongodb": "^6.13.1",
-    "mongoose": "^8.12.1",
+    "mongoose": "^8.13.1",
     "office-text-extractor": "^3.0.3",
     "pdf-parse": "^1.1.1",
     "react": "18.3.1",

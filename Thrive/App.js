@@ -1,7 +1,7 @@
 import "@expo/metro-runtime";
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, TextInput } from 'react-native';
+import { useState, useRef } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, TextInput,  } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 import styles from './styles'
@@ -10,6 +10,12 @@ import { Picker } from '@react-native-picker/picker';
 import pdfToText from "react-pdftotext";
 
 var mammoth = require("mammoth");
+
+import { LaunchView, NewChatView, OldChatView, TextBox } from "./components/chatView";
+import CompanyPopup from "./components/companyPopup";
+import ChatBox from "./components/chatBox";
+import Sidebar from "./components/Sidebar";
+
 
 
 
@@ -23,28 +29,50 @@ export default function App() {
 
   // stores user input from the text field 
   const [textInput, setTextInput] = useState(""); // State for the text input
-
+  // stores messages for chatBox
+  const[messages, setMessages] = useState([]); //array of the messages saves for a chat
 
    //pop up visibility and input state
   const[companyModalVisible, setCompanyModalVisible] = useState(false);
+  // Company name storage for backend assignment
   const [companyName, setCompanyName] = useState('');
+
+  //Chats as usestates
   const [chatHistory, setChatHistory] = useState([]); // All chats in history
   const [activeChatId, setActiveChatId] = useState(null); // Current chat being viewed
 
-
+  //View for new chat
   const [newChatView, setNewChatView] = useState(null);
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
   };
 
+  const textInputRef = useRef(null); //used to refocus onto chat
+
   // Creates a new chat. Defaults chat ID to length of history, gives the new chat a title, and records the time the chat was made
   const makeNewChat = () => {
     const chatID = chatHistory.length + 1;
+    const summaryResponse = "Summary test"
     const newChat = {
       id: chatID,
       title: `Chat ${chatID}`, //variable to be updated when the popup menu is implemented
       timestamp: new Date().toLocaleString(),
+      summaryResponse,
+
+      //These are the test case messages to help build the chatBox
+      chatMessages: [
+        {
+          sender: "ai",
+          message: summaryResponse
+        },
+        {
+          sender: "ai",
+          message: "How can I help today?"
+        }
+      
+
+    ]
     }; //Creates a new chat object with a unique ID, a title to view on the sidebar, and date on when it was created (saved as a string) 
     
     setChatHistory([newChat, ...chatHistory]); //Adds this newChat object to the chatHistory array (This adds this chat to the beginning of the array rather than the end)
@@ -57,21 +85,49 @@ export default function App() {
         const response = await axios.post("http://localhost:3000/summary", {
             text: text 
         });
- 
+
+        
+        
         console.log("Response:", response.data.choices[0].message.content); // this is the responce from the AI. It is formatted in markdown
+        //Stores the response as a variable
+        //Stores ai summary response as the active chat's variable, this is immutably changed so an update should be automatic
+        // const aiResponse = "Response:"+ response.data.choices[0].message.content
+        // setChatHistory(prev => 
+        //   prev.map(chat => 
+        //     chat.id === activeChatId?
+        //     {...chat, summaryResponse: aiResponse}
+        //     : chat
+        //   )
+        // )
     } catch (error) {
         console.error("Error sending summary request:", error);
     }
  };
- 
-
-  const handleTextChange = async () => {
-
-  }
 
   //show pop up instead of immediate upload
   const handleFileUpload = () => {
     setCompanyModalVisible(true);
+  };
+
+  const handleSendMessage = () => {
+    if (!textInput.trim()) return; // Don't send empty messages
+  
+    const newMessage = {
+      sender: "user",
+      message: textInput.trim()
+    };
+  
+    // Add the message to the active chat
+    setChatHistory(prevChats =>
+      prevChats.map(chat =>
+        chat.id === activeChatId
+          ? { ...chat, chatMessages: [...chat.chatMessages, newMessage] }
+          : chat
+      )
+    );
+  
+    setTextInput(""); // Clear input after sending
+    textInputRef.current?.focus(); //refocus cursor onto chatbox
   };
 
   //upload after company name is submitted
@@ -151,158 +207,116 @@ export default function App() {
   return (
     <View style={styles.container}>
 
-      {/* Start of building the sidebar */}
+      {/* Sidebar */}
       {sidebarVisible && (
-        <View style={styles.sidebar}>
-          <Text style={styles.sidebarTitle}>History</Text>
-
-          {/*Code for "new chat" buttons */}
-          <TouchableOpacity style={styles.newChatButton} onPress={makeNewChat}>
-          <Text style={styles.newChatButtonText}>New Notes Summary</Text>
-        </TouchableOpacity>
-
-        
-        <FlatList
-          //This flatlist takes in the array chatHistory which is story the chats created
-          // each object is a file with properties id, title, and timestamp 
-            data={chatHistory}
-
-            // each item requires a unique string (#)
-            keyExtractor={(item) => item.id.toString()}
-
-            // renders each items from the chatHistory array and makes them a button to be used to restore their history
-            renderItem={({ item }) => (
-              <TouchableOpacity
-              onPress={() => {
-                setActiveChatId(item.id);
-                setNewChatView(false)
-              }}>
-                {/* Displays the title and the date it was created */}
-              <View style={styles.historyItem}>
-                <Text style={styles.historyText}>{item.title}</Text>
-                <Text style={styles.historyDate}>Created on {item.timestamp}</Text>
-              </View>
-              </TouchableOpacity>
-            )}
-          />
-          {/* End of building sidebar */}
-        </View>
+        <Sidebar
+        chatHistory = {chatHistory}
+        setActiveChatId = {setActiveChatId}
+        setNewChatView = {setNewChatView}
+        makeNewChat = {makeNewChat}
+        />
       )}
 
-      {/* Popup that is to show when a file is attempted to be uploaded */}
-      {companyModalVisible && (
-            <View style={styles.modalOverlay}>
-              <View style={styles.modalBox}>
-                <Text style={styles.modalTitle}>What is your company?</Text>
-                <Picker
-        selectedValue={companyName}
-        style={styles.picker}
-        onValueChange={(itemValue) => setCompanyName(itemValue)}
-      >
-        <Picker.Item label="Select Company" value="" />  {/* Default option */}
-        <Picker.Item label="Company 1" value="Company 1" />
-        <Picker.Item label="Company 2" value="Company 2" />
-        <Picker.Item label="Company 3" value="Company 3" />
-      </Picker>
-                <TouchableOpacity style={styles.modalButton} onPress={handleCompanySubmit}>
-                  <Text style={styles.modalButtonText}>Continue</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
 
       
-      {/* Start of main view that is displayed */}
-      <View style={styles.mainContent}> 
 
+      
+      {/* Main displayed content */}
+      <View style={[styles.mainContent]}> 
 
+        {/* Popup that is to show when a file is attempted to be uploaded, allows the user to set their company for organization */}
+      {companyModalVisible && (
+        <CompanyPopup
+        companyName = {companyName}
+        setCompanyName = {setCompanyName}
+        handleCompanySubmit = {handleCompanySubmit}
+        />
+      )}
+
+      {/* sidebar menu button to toggle visibility */}
+      <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
+        <Image source={menuIcon} style={styles.menuIcon} />
+      </TouchableOpacity>
+      
       {/* This view is displayed when the user first loads the page */}
       <View>{newChatView==null && (
-        <View>
-  
-        <Text style={[styles.thirdText, { textAlign: 'center'}, {justifyContent: "flex-start"}, {paddingTop: 1}, {paddingBottom: 1}]}>
-          Chat ID: None
-          </Text>
-        <Text style={[styles.standardText, { textAlign: 'center'}, {justifyContent: "flex-start"}, {paddingTop: 1}]}>
-          Press "New Notes Summary" to create a chat!
-        </Text>
-        </View>
+        <LaunchView/>
       )}
       </View>
 
 
-      {/*newChat == true */}
-      <View>
+      {/*Looking at a new chat */}
         {newChatView==true && (
-        <View>
-          {/* To display the current chat the user is looking in (for testing) */}
-          <Text style={[styles.thirdText, { textAlign: 'center'}, {justifyContent: "flex-start"}, {paddingTop: 1}]}>
-            New Chat ID: {activeChatId}
-            </Text>
+          
+        <View style={{flex: 1, 
+        justifyContent: "space-between",
+        width: "100%"}}>
 
-          {/* logo container */}
-          <View style={styles.logoContainer}>
-          <Image source={logo} style={styles.logo} />
-          </View>
-
-          {/* text indicating allowed file types */}
-          <Text style={styles.thirdText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
-
-          {/* button for file upload */}
-          <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
-            <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
+          <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
+            <Image source={menuIcon} style={styles.menuIcon} />
           </TouchableOpacity>
-        </View>
-        )}
-      </View>
+          
+          <NewChatView
+          activeChatId = {activeChatId}
+          logo = {logo}
+          handleFileUpload = {handleFileUpload}
+          />
 
-
-      {/* newChat == false */}
-      {newChatView==false && (
-        <View>
-          {/* To display the current chat the user is looking in (for testing) */}
-          <Text style={[styles.thirdText, { textAlign: 'center'}, {paddingTop: 1},]}>
-            This is an old chat with ID: {activeChatId}
-            </Text>
-
-          {/* logo container */}
-          <View style={styles.logoContainer}>
-          <Image source={logo} style={styles.logo} />
-          </View>
-
-          {/* text indicating allowed file types */}
-          <Text style={styles.thirdText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
-
-          {/* button for file upload */}
-          <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
-            <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
-          </TouchableOpacity>
+          <ChatBox messages={
+              chatHistory.find(chat => chat.id === activeChatId)?.chatMessages || []
+            } summary={chatHistory.find(chat => chat.id === activeChatId)?.summaryResponse || ""
+            } />
+          
+          <TextBox
+            setTextInput={setTextInput}
+            textInput={textInput}
+            handleSend={handleSendMessage}
+            sendIcon={sendIcon}
+            inputRef={textInputRef}
+          />
+          
         </View>
         )}
 
+
+      {/* Looking at an old chat */}
+        {newChatView==false && (
+          <View style={{flex: 1, 
+            justifyContent: "space-between",
+            width: "100%"}}>
+    
+            <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
+              <Image source={menuIcon} style={styles.menuIcon} />
+            </TouchableOpacity>
+
+            <OldChatView
+              activeChatId = {activeChatId}
+              logo = {logo}
+              handleFileUpload = {handleFileUpload}
+            />
+
+              <ChatBox messages={
+                chatHistory.find(chat => chat.id === activeChatId)?.chatMessages || []
+              } summary={chatHistory.find(chat => chat.id === activeChatId)?.summaryResponse || ""
+              } />
+
+              <TextBox
+                setTextInput={setTextInput}
+                textInput={textInput}
+                handleSend={handleSendMessage}
+                sendIcon={sendIcon}
+                inputRef={textInputRef}
+              />
+
+          </View>
+          )}
 
         {/* sidebar menu button to toggle visibility */}
-        <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
+        {/* <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
           <Image source={menuIcon} style={styles.menuIcon} />
-        </TouchableOpacity>
-
-        
+        </TouchableOpacity> */}
 
         {/* text input field to enter user input */}
-        <View style={styles.textInputContainer}>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Enter some text here"
-            value={textInput}
-            onChangeText={handleTextChange} // updates the text input value in the state
-          />
-          {/* send icon button next to the text input box */}
-          <TouchableOpacity style={styles.sendIconContainer}>
-            <Image source={sendIcon} style={styles.sendIcon} />
-          </TouchableOpacity>
-        </View>
-        {/*auto prop adjusts the status bar styling based on the background of the screen*/}
-        <StatusBar style="auto" />
       </View>
     </View>
   );
