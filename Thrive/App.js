@@ -7,7 +7,7 @@ import axios from 'axios';
 import styles from './styles'
 import { set } from 'mongoose';
 import { Picker } from '@react-native-picker/picker';
-import pdfToText from "react-pdftotext";
+// import pdfToText from "react-pdftotext";
 
 var mammoth = require("mammoth");
 
@@ -53,19 +53,15 @@ export default function App() {
   // Creates a new chat. Defaults chat ID to length of history, gives the new chat a title, and records the time the chat was made
   const makeNewChat = () => {
     const chatID = chatHistory.length + 1;
-    const summaryResponse = "Summary test"
+    // const summaryResponse = "Summary test"
     const newChat = {
       id: chatID,
       title: `Chat ${chatID}`, //variable to be updated when the popup menu is implemented
       timestamp: new Date().toLocaleString(),
-      summaryResponse,
+      // summaryResponse,
 
       //These are the test case messages to help build the chatBox
       chatMessages: [
-        {
-          sender: "ai",
-          message: summaryResponse
-        },
         {
           sender: "ai",
           message: "How can I help today?"
@@ -88,17 +84,26 @@ export default function App() {
 
         
         
-        console.log("Response:", response.data.choices[0].message.content); // this is the responce from the AI. It is formatted in markdown
+        // console.log("Response:", response.data.choices[0].message.content); // this is the responce from the AI. It is formatted in markdown
         //Stores the response as a variable
         //Stores ai summary response as the active chat's variable, this is immutably changed so an update should be automatic
-        // const aiResponse = "Response:"+ response.data.choices[0].message.content
-        // setChatHistory(prev => 
-        //   prev.map(chat => 
-        //     chat.id === activeChatId?
-        //     {...chat, summaryResponse: aiResponse}
-        //     : chat
-        //   )
-        // )
+        const aiResponse = "Response:"+ response.data.choices[0].message.content
+        setChatHistory(prev => 
+          prev.map(chat => 
+            chat.id === activeChatId?
+            {
+              ...chat,
+              chatMessages: [
+              ...chat.chatMessages,
+              {
+              sender: "ai",
+              message: aiResponse
+              }
+            ]
+            }
+            : chat
+          )
+        )
     } catch (error) {
         console.error("Error sending summary request:", error);
     }
