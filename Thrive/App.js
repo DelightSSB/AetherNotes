@@ -8,10 +8,8 @@ import styles from './styles'
 import { LaunchView, NewChatView, OldChatView, TextBox } from "./components/chatView";
 import CompanyPopup from "./components/companyPopup";
 import ChatBox from "./components/chatBox";
-import AISummary from "./components/chatBox";
 import Sidebar from "./components/Sidebar";
-import { set } from 'mongoose';
-import { Picker } from '@react-native-picker/picker';
+
 
 
 
@@ -45,6 +43,7 @@ export default function App() {
   };
 
   const textInputRef = useRef(null); //used to refocus onto chat
+
   // Creates a new chat. Defaults chat ID to length of history, gives the new chat a title, and records the time the chat was made
   const makeNewChat = () => {
     const chatID = chatHistory.length + 1;
@@ -61,31 +60,10 @@ export default function App() {
           sender: "ai",
           message: summaryResponse
         },
-      
-      {
-        sender: "ai",
-        message: "What can I help with today?"
-      },
-      {
-        sender: "user",
-        message: "Here's what I need..."
-      },
-      {
-        sender: "ai",
-        message: "Yes I can help you with that!"
-      },
-      {
-        sender: "user",
-        message: "Now can you help with this?"
-      },
-      {
-        sender: "user",
-        message: "Also I could use your help with this..."
-      },
-      {
-        sender: "ai",
-        message: "Ahh I gotcha, let's do this..."
-      },
+        {
+          sender: "ai",
+          message: "How can I help today?"
+        }
       
 
     ]
@@ -143,7 +121,7 @@ export default function App() {
     );
   
     setTextInput(""); // Clear input after sending
-    textInputRef.current?.focus();
+    textInputRef.current?.focus(); //refocus cursor onto chatbox
   };
 
   //upload after company name is submitted
@@ -243,21 +221,32 @@ export default function App() {
 
       {/*Looking at a new chat */}
         {newChatView==true && (
-        <View>
           
+        <View style={{flex: 1, 
+        justifyContent: "space-between",
+        width: "100%"}}>
 
-          <View>
-            <ChatBox messages={
-              chatHistory.find(chat => chat.id === activeChatId)?.chatMessages || []
-            } summary={chatHistory.find(chat => chat.id === activeChatId)?.summaryResponse || ""
-            } />
-
-          </View>
-
+          <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
+            <Image source={menuIcon} style={styles.menuIcon} />
+          </TouchableOpacity>
+          
           <NewChatView
           activeChatId = {activeChatId}
           logo = {logo}
           handleFileUpload = {handleFileUpload}
+          />
+
+          <ChatBox messages={
+              chatHistory.find(chat => chat.id === activeChatId)?.chatMessages || []
+            } summary={chatHistory.find(chat => chat.id === activeChatId)?.summaryResponse || ""
+            } />
+          
+          <TextBox
+            setTextInput={setTextInput}
+            textInput={textInput}
+            handleSend={handleSendMessage}
+            sendIcon={sendIcon}
+            inputRef={textInputRef}
           />
           
         </View>
@@ -266,17 +255,32 @@ export default function App() {
 
       {/* Looking at an old chat */}
         {newChatView==false && (
-          <View>
-          <OldChatView
-            activeChatId = {activeChatId}
-            logo = {logo}
-            handleFileUpload = {handleFileUpload}
-          />
+          <View style={{flex: 1, 
+            justifyContent: "space-between",
+            width: "100%"}}>
+    
+            <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
+              <Image source={menuIcon} style={styles.menuIcon} />
+            </TouchableOpacity>
 
-            <ChatBox messages={
-              chatHistory.find(chat => chat.id === activeChatId)?.chatMessages || []
-            } summary={chatHistory.find(chat => chat.id === activeChatId)?.summaryResponse || ""
-            } />
+            <OldChatView
+              activeChatId = {activeChatId}
+              logo = {logo}
+              handleFileUpload = {handleFileUpload}
+            />
+
+              <ChatBox messages={
+                chatHistory.find(chat => chat.id === activeChatId)?.chatMessages || []
+              } summary={chatHistory.find(chat => chat.id === activeChatId)?.summaryResponse || ""
+              } />
+
+              <TextBox
+                setTextInput={setTextInput}
+                textInput={textInput}
+                handleSend={handleSendMessage}
+                sendIcon={sendIcon}
+                inputRef={textInputRef}
+              />
 
           </View>
           )}
@@ -287,13 +291,6 @@ export default function App() {
         </TouchableOpacity> */}
 
         {/* text input field to enter user input */}
-        <TextBox
-        setTextInput={setTextInput}
-        textInput={textInput}
-        handleSend={handleSendMessage}
-        sendIcon={sendIcon}
-        inputRef={textInputRef}
-        />
       </View>
     </View>
   );

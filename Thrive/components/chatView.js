@@ -22,13 +22,7 @@ export function LaunchView({}){
 export function NewChatView({activeChatId, logo, handleFileUpload}){
     return(
   
-          <View style={{
-            position: "absolute",
-            width: "25%", 
-            alignSelf: "center",
-            top: 50
-
-            }}>
+          <View style={chatView.buttonContainer}>
             {/* To display the current chat the user is looking in (for testing) */}
             <Text style={[styles.thirdText, { textAlign: 'center'}, {paddingTop: 1}]}>
               New Chat ID: {activeChatId}
@@ -55,7 +49,7 @@ export function NewChatView({activeChatId, logo, handleFileUpload}){
 export function OldChatView({activeChatId, logo, handleFileUpload}){
     return(
 
-          <View style={{flexShrink: 0}}>
+          <View style={chatView.buttonContainer}>
           {/* To display the current chat the user is looking in (for testing) */}
           <Text style={[styles.thirdText, { textAlign: 'center'}, {paddingTop: 1},]}>
             This is an old chat with ID: {activeChatId}
@@ -80,11 +74,12 @@ export function OldChatView({activeChatId, logo, handleFileUpload}){
 //Textbox at the bottom
 export function TextBox ({textInput, sendIcon, setTextInput, handleSend, inputRef}){
     return(
-        <View style={styles.textInputContainer}>
+        <View style={chatView.textInputContainer}>
           <TextInput
 
           ref={inputRef}
-          style={styles.textInput}
+          blurOnSubmit={false}
+          style={chatView.textInput}
           placeholder="What do you need?"
           value={textInput}
           onChangeText={(val) => setTextInput(val)}
@@ -101,3 +96,41 @@ export function TextBox ({textInput, sendIcon, setTextInput, handleSend, inputRe
         
     )
 }
+
+const chatView = StyleSheet.create({
+  buttonContainer:{
+    width: "25%",
+    alignSelf: "center",
+    marginTop: 80,
+  },
+  thirdText: {
+    fontSize: 14, 
+    fontWeight: "bold",
+    color:"#666",
+    fontFamily: styles.fontFamily,
+  },
+  standardText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    fontFamily: styles.fontFamily, // Ensure the font is applied here
+  },
+  textInputContainer: {
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    // width: '80%',
+    flexDirection: 'row',
+  },
+    // TEXT INPUT BOX 
+  textInput: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    borderRadius: 18,
+    borderWidth: 4,
+    borderColor: '#293D74',
+    fontSize: 16,
+    fontFamily: styles.fontFamily, // Consistent font family for text input
+  },
+
+
+})
