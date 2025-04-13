@@ -1,12 +1,13 @@
 import "@expo/metro-runtime";
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, TextInput } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 import styles from './styles'
 import { set } from 'mongoose';
 import { Picker } from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
@@ -35,18 +36,40 @@ export default function App() {
     setSidebarVisible(!sidebarVisible);
   };
 
+  //Load chat history from AsychStorage on app start
+  useEffect(() =>{
+    const loadChatsFromStorage = async () => {
+      try{
+        const storedChats = await AsyncStorage.getItem('recentChats');
+        if (storedChats) {
+          setChatHistory(JSON.parse(storedChats));
+        }
+      } catch (error){
+        console.error('Failed to load chat history:', error);
+      }
+    };
+    loadChatsFromStorage();
+  }, []);
+
   // Creates a new chat. Defaults chat ID to length of history, gives the new chat a title, and records the time the chat was made
   const makeNewChat = () => {
-    const chatID = chatHistory.length + 1;
+    const chatID = Date.now(); //unique ID
     const newChat = {
       id: chatID,
       title: `Chat ${chatID}`, //variable to be updated when the popup menu is implemented
       timestamp: new Date().toLocaleString(),
     }; //Creates a new chat object with a unique ID, a title to view on the sidebar, and date on when it was created (saved as a string) 
     
-    setChatHistory([newChat, ...chatHistory]); //Adds this newChat object to the chatHistory array (This adds this chat to the beginning of the array rather than the end)
+    const updatedHistory = [newChat, ...chatHistory].slice(0,14); //stores max 14 chats in sidebar history
+    
+    setChatHistory(updatedHistory); //stores chat to memory
     setActiveChatId(chatID); //Sets the active chat to the one just created, ensures the new chat you're editing is the newest one created assuming you stay in the chat
     setNewChatView(true); //Ensures the view is automatically changed when the button is pressed
+
+    //save to AsynchStorage
+    AsyncStorage.setItem('recentChats', JSON.stringify(updatedHistory)).catch((error) =>
+      console.error('Failed to save chat history:', error)
+    );
   };
 
   const summaryReturn = async (text) => {
@@ -282,6 +305,7 @@ export default function App() {
         <StatusBar style="auto" />
       </View>
     </View>
+    
   );
 
   
