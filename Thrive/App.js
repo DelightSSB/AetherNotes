@@ -1,7 +1,8 @@
 import "@expo/metro-runtime";
 import { StatusBar } from 'expo-status-bar';
-import { useState, useRef } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, TextInput,  } from 'react-native';
+import { useState, useRef, useEffect } from 'react';
+import {Text, View, TouchableOpacity, Image, FlatList, TextInput,  } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 import styles from './styles'
@@ -15,6 +16,7 @@ import { LaunchView, NewChatView, OldChatView, TextBox } from "./components/chat
 import CompanyPopup from "./components/companyPopup";
 import ChatBox from "./components/chatBox";
 import Sidebar from "./components/Sidebar";
+import { uploadAsync } from "expo-file-system";
 
 
 
@@ -29,6 +31,7 @@ export default function App() {
 
   // stores user input from the text field 
   const [textInput, setTextInput] = useState(""); // State for the text input
+
   // stores messages for chatBox
   const[messages, setMessages] = useState([]); //array of the messages saves for a chat
 
@@ -50,31 +53,68 @@ export default function App() {
 
   const textInputRef = useRef(null); //used to refocus onto chat
 
+  //Call this to save the chats in their immediete state.
+  const saveChats = (chatToSave = chatHistory) => {
+    AsyncStorage.setItem('recentChats', JSON.stringify(chatToSave)).catch(err =>
+      console.error("Failed to save chatHistory after AI response", err)
+    );
+  }
+
   // Creates a new chat. Defaults chat ID to length of history, gives the new chat a title, and records the time the chat was made
   const makeNewChat = () => {
     const chatID = chatHistory.length + 1;
     // const summaryResponse = "Summary test"
+    //Creates a new chat object with a unique ID, a title to view on the sidebar, and date on when it was created (saved as a string) 
     const newChat = {
       id: chatID,
       title: `Chat ${chatID}`, //variable to be updated when the popup menu is implemented
       timestamp: new Date().toLocaleString(),
-      // summaryResponse,
 
-      //These are the test case messages to help build the chatBox
+      //Array of chats, these are automatically updated as the user and ai respond to each other
       chatMessages: [
         {
           sender: "ai",
           message: "How can I help today?"
         }
-      
-
     ]
-    }; //Creates a new chat object with a unique ID, a title to view on the sidebar, and date on when it was created (saved as a string) 
+    }; 
     
-    setChatHistory([newChat, ...chatHistory]); //Adds this newChat object to the chatHistory array (This adds this chat to the beginning of the array rather than the end)
+    const updatedHistory = [newChat, ... chatHistory].slice(0,14); //Adds this newChat object to the chatHistory array (This adds this chat to the beginning of the array rather than the end) only 14 chats can be saved
+
+    setChatHistory(updatedHistory); 
     setActiveChatId(chatID); //Sets the active chat to the one just created, ensures the new chat you're editing is the newest one created assuming you stay in the chat
     setNewChatView(true); //Ensures the view is automatically changed when the button is pressed
+    saveChats(updatedHistory);
+
   };
+
+  const deleteChat = (ID) => {
+    const updatedHistory = chatHistory.filter(chat => chat.id !== ID);
+
+    setChatHistory(updatedHistory);
+
+    if(activeChatId === ID){
+      setActiveChatId(null);
+      setNewChatView(null);
+    }
+    saveChats(updatedHistory);
+  };
+
+
+  //Reloads the chats on app start/restart
+  useEffect(() => {
+    const loadChatsFromStorage = async () => {
+      try{
+        const storedChats = await AsyncStorage.getItem('recentChats');
+        if (storedChats) {
+          setChatHistory(JSON.parse(storedChats));
+        }
+      } catch (error){
+        console.error('Failed to load chat history:', error);
+      }
+    };
+    loadChatsFromStorage();
+  }, []);
 
   const summaryReturn = async (text) => {
     try {
@@ -85,28 +125,27 @@ export default function App() {
         
         
         // console.log("Response:", response.data.choices[0].message.content); // this is the responce from the AI. It is formatted in markdown
+
+
         //Stores the response as a variable
         //Stores ai summary response as the active chat's variable, this is immutably changed so an update should be automatic
         const aiResponse = "Response:"+ response.data.choices[0].message.content
-        setChatHistory(prev => 
-          prev.map(chat => 
-            chat.id === activeChatId?
-            {
-              ...chat,
-              chatMessages: [
-              ...chat.chatMessages,
-              {
-              sender: "ai",
-              message: aiResponse
+        
+        //Adds the response as a message from the ai
+        const updatedHistory = chatHistory.map(chat =>
+          chat.id === activeChatId
+            ? {
+                ...chat,
+                chatMessages: [...chat.chatMessages, { sender: "ai", message: aiResponse }]
               }
-            ]
-            }
             : chat
-          )
-        )
+        );
+
     } catch (error) {
         console.error("Error sending summary request:", error);
     }
+    setChatHistory(updatedHistory);
+    saveChats(updatedHistory);
  };
 
   //show pop up instead of immediate upload
@@ -123,16 +162,19 @@ export default function App() {
     };
   
     // Add the message to the active chat
-    setChatHistory(prevChats =>
-      prevChats.map(chat =>
-        chat.id === activeChatId
-          ? { ...chat, chatMessages: [...chat.chatMessages, newMessage] }
-          : chat
-      )
+    const updatedHistory = chatHistory.map(chat =>
+      chat.id === activeChatId
+        ? {
+            ...chat,
+            chatMessages: [...chat.chatMessages, newMessage]
+          }
+        : chat
     );
   
     setTextInput(""); // Clear input after sending
     textInputRef.current?.focus(); //refocus cursor onto chatbox
+    setChatHistory(updatedHistory);
+    saveChats(updatedHistory);
   };
 
   //upload after company name is submitted
@@ -219,6 +261,7 @@ export default function App() {
         setActiveChatId = {setActiveChatId}
         setNewChatView = {setNewChatView}
         makeNewChat = {makeNewChat}
+        deleteChat={deleteChat}
         />
       )}
 

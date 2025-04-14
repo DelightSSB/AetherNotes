@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, TextInput } from 'react-native';
 import styles from "../styles";
 
-export default function Sidebar({chatHistory, makeNewChat, setActiveChatId, setNewChatView}){
+export default function Sidebar({chatHistory, makeNewChat, setActiveChatId, setNewChatView, deleteChat}){
 return(
 <View style={sidebar.sidebar}>
           <Text style={sidebar.sidebarTitle}>History</Text>
@@ -23,17 +23,26 @@ return(
 
             // renders each items from the chatHistory array and makes them a button to be used to restore their history
             renderItem={({ item }) => (
-              <TouchableOpacity
-              onPress={() => {
-                setActiveChatId(item.id);
-                setNewChatView(false)
-              }}>
-                {/* Displays the title and the date it was created */}
-              <View style={sidebar.historyItem}>
-                <Text style={sidebar.historyText}>{item.title}</Text>
-                <Text style={sidebar.historyDate}>Created on {item.timestamp}</Text>
+              <View style={sidebar.buttonContainer}>
+                <TouchableOpacity 
+                style={sidebar.deleteButton}
+                onPress={() => deleteChat(item.id)}>
+                <Text style={{fontSize: 16, color: "red"}}> X </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                onPress={() => {
+                  setActiveChatId(item.id);
+                  setNewChatView(false)
+                }}>
+                  {/* Displays the title and the date it was created */}
+                <View style={sidebar.historyItem}>
+                  <Text style={sidebar.historyText}>{item.title}</Text>
+                  <Text style={sidebar.historyDate}>Created on {item.timestamp}</Text>
+                </View>
+                </TouchableOpacity>
+
               </View>
-              </TouchableOpacity>
             )}
           />
           {/* End of building sidebar */}
@@ -42,7 +51,20 @@ return(
 }
 
 const sidebar = StyleSheet.create({
+  buttonContainer:{
+    flexDirection: "row",
+    // alignItems: "center",
+    // justifyContent: "space-between",
+    paddingRight: 5
+  },
+
+  deleteButton: {
+    padding: 6,
+    marginLeft: 10,
+  },
+
   sidebar: {
+    flex: 1,
     width: 250,
     backgroundColor: 'rgba(244, 244, 244, .5)', // semi-transparent background for sidebar 
     padding: 15,

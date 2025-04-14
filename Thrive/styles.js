@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(199, 200, 216)', // background color for the whole screen
   },
   mainContent: {
-    flex: 1,
+    flex: 5,
     alignItems: "center",
   },
   logoContainer: {
