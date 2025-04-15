@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: 'rgb(199, 200, 216)', // background color for the whole screen
+    backgroundColor: 'rgb(243, 243, 243)', // background color for the whole screen
   },
   mainContent: {
     flex: 5,
@@ -37,21 +37,8 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
 
-  uploadButton: {
-    marginTop: 20,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    backgroundColor: 'rgb(41, 61, 122)',
-    // backgroundColor: '#000', // black background for button 
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  uploadButtonText: {
-    color: '#fff',  // white text color on the button
-    fontSize: 16,
-    fontWeight: 'bold',
-    fontFamily: fontFamily, 
-  },
+
+
   menuButton: {
     position: 'absolute',
     top: 20,
@@ -63,20 +50,35 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
 
-  // SEND BUTTON 
-  sendIconContainer: {
-    marginLeft: 10,
-  },
-  sendIcon: {
-    width: 30,
-    height: 30,
-    resizeMode: 'contain',
-  },
-
     // Syles for the chatbox
     messageText: {
       fontSize: 16,
   },
+
+  AetherLogoContainer:
+  {
+    paddingTop: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  
+  AetherNotesLogo: {
+    flex: 1,
+    fontFamily: "Exo2_600SemiBold",
+    fontSize: 55,
+    color: 'rgb(41, 61, 122)',
+  },
+  chatContainer:{
+    borderRadius: 18,
+    borderStyle: "dashed",
+    borderColor: 'rgba(41, 61, 122, .9)',
+    borderWidth: 4,
+    alignSelf: "center",
+    width: "50%",
+    height: "75%",
+    marginBottom: 60,
+  },
+  
   //End of styles for chatbox
 
 
