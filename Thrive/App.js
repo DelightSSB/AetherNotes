@@ -1,13 +1,10 @@
 import "@expo/metro-runtime";
-import { StatusBar } from 'expo-status-bar';
 import { useState, useRef, useEffect } from 'react';
 import {Text, View, TouchableOpacity, Image, FlatList, TextInput,  } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 import styles from './styles'
-import { set } from 'mongoose';
-import { Picker } from '@react-native-picker/picker';
 // import pdfToText from "react-pdftotext";
 
 var mammoth = require("mammoth");
@@ -17,6 +14,8 @@ import CompanyPopup from "./components/companyPopup";
 import ChatBox from "./components/chatBox";
 import Sidebar from "./components/Sidebar";
 import { uploadAsync } from "expo-file-system";
+import { useFonts, Exo2_600SemiBold } from '@expo-google-fonts/exo-2';
+import AppLoading from 'expo-app-loading';
 
 
 
@@ -53,7 +52,16 @@ export default function App() {
 
   const textInputRef = useRef(null); //used to refocus onto chat
 
-  //Call this to save the chats in their immediete state.
+  //Imports the Expo 2 font for AetherNotes Logo Text, if the font doesn't import then the app will stall until it does
+  const [fontsLoaded] = useFonts({
+    Exo2_600SemiBold,
+  });
+
+  // if (!fontsLoaded) {
+  //   return null; // or null if you're not using AppLoading
+  // }
+
+  //Call this to save the chats locally in their immediate state.
   const saveChats = (chatToSave = chatHistory) => {
     AsyncStorage.setItem('recentChats', JSON.stringify(chatToSave)).catch(err =>
       console.error("Failed to save chatHistory after AI response", err)
@@ -86,6 +94,7 @@ export default function App() {
     setNewChatView(true); //Ensures the view is automatically changed when the button is pressed
     saveChats(updatedHistory);
 
+    return newChat;
   };
 
   const deleteChat = (ID) => {
@@ -122,17 +131,25 @@ export default function App() {
             text: text 
         });
 
-        
-        
+        let updatedHistory = [];
         // console.log("Response:", response.data.choices[0].message.content); // this is the responce from the AI. It is formatted in markdown
-
-
         //Stores the response as a variable
         //Stores ai summary response as the active chat's variable, this is immutably changed so an update should be automatic
         const aiResponse = "Response:"+ response.data.choices[0].message.content
         
+        if(newChatView===null){
+          const newChat = makeNewChat();
+          const updatedMessaging = {
+            ...newChat,
+            chatMessages: [...newChat.chatMessages, {sender: "ai", message: aiResponse}]
+          };
+          updatedHistory = [updatedMessaging, ...chatHistory].slice(0,14);
+          setChatHistory(updatedHistory);
+          saveChats(updatedHistory);
+        }
+        else{
         //Adds the response as a message from the ai
-        const updatedHistory = chatHistory.map(chat =>
+        updatedHistory = chatHistory.map(chat =>
           chat.id === activeChatId
             ? {
                 ...chat,
@@ -140,6 +157,7 @@ export default function App() {
               }
             : chat
         );
+      }
 
     } catch (error) {
         console.error("Error sending summary request:", error);
@@ -153,16 +171,35 @@ export default function App() {
     setCompanyModalVisible(true);
   };
 
+  //Handles sending a message and adding it to chatBox
   const handleSendMessage = () => {
     if (!textInput.trim()) return; // Don't send empty messages
-  
+
+    const newMessage = {
+      sender: "user",
+      message: textInput.trim()
+    };
+    let updatedHistory =[];
+
+    if(newChatView==null){
+      const newChat = makeNewChat();
+      const updatedMessaging = {
+        ...newChat,
+        chatMessages: [...newChat.chatMessages, newMessage]
+      };
+      updatedHistory = [updatedMessaging, ...chatHistory].slice(0,14);
+      setChatHistory(updatedHistory);
+      saveChats(updatedHistory);
+
+    }
+    else{
     const newMessage = {
       sender: "user",
       message: textInput.trim()
     };
   
     // Add the message to the active chat
-    const updatedHistory = chatHistory.map(chat =>
+    updatedHistory = chatHistory.map(chat =>
       chat.id === activeChatId
         ? {
             ...chat,
@@ -170,11 +207,13 @@ export default function App() {
           }
         : chat
     );
+    setChatHistory(updatedHistory);
+    saveChats(updatedHistory);
+    }
   
     setTextInput(""); // Clear input after sending
     textInputRef.current?.focus(); //refocus cursor onto chatbox
-    setChatHistory(updatedHistory);
-    saveChats(updatedHistory);
+  
   };
 
   //upload after company name is submitted
@@ -264,13 +303,12 @@ export default function App() {
         deleteChat={deleteChat}
         />
       )}
-
-
-      
-
       
       {/* Main displayed content */}
       <View style={[styles.mainContent]}> 
+        <View style={styles.AetherLogoContainer}>
+          <Text style={styles.AetherNotesLogo}>AetherNotes</Text>
+        </View>
 
         {/* Popup that is to show when a file is attempted to be uploaded, allows the user to set their company for organization */}
       {companyModalVisible && (
@@ -287,10 +325,37 @@ export default function App() {
       </TouchableOpacity>
       
       {/* This view is displayed when the user first loads the page */}
-      <View>{newChatView==null && (
-        <LaunchView/>
+      {newChatView==null && (
+        <View style ={{flex: 1, 
+          justifyContent: "space-between",
+          width: "100%"}}>
+        <LaunchView
+        logo = {logo}
+        handleFileUpload = {handleFileUpload}
+        />
+
+        <View style={styles.chatContainer}>
+          <ChatBox messages={
+              chatHistory.find(chat => chat.id === activeChatId)?.chatMessages || [
+                {
+                  sender: "ai",
+                  message: "How can I help today?"
+                }
+            ]
+            } summary={chatHistory.find(chat => chat.id === activeChatId)?.summaryResponse || ""
+            } />
+
+        <TextBox
+            setTextInput={setTextInput}
+            textInput={textInput}
+            handleSend={handleSendMessage}
+            sendIcon={sendIcon}
+            inputRef={textInputRef}
+          />
+          </View>
+        </View>
       )}
-      </View>
+      
 
 
       {/*Looking at a new chat */}
@@ -299,10 +364,6 @@ export default function App() {
         <View style={{flex: 1, 
         justifyContent: "space-between",
         width: "100%"}}>
-
-          <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
-            <Image source={menuIcon} style={styles.menuIcon} />
-          </TouchableOpacity>
           
           <NewChatView
           activeChatId = {activeChatId}
@@ -310,6 +371,7 @@ export default function App() {
           handleFileUpload = {handleFileUpload}
           />
 
+        <View style={styles.chatContainer}>
           <ChatBox messages={
               chatHistory.find(chat => chat.id === activeChatId)?.chatMessages || []
             } summary={chatHistory.find(chat => chat.id === activeChatId)?.summaryResponse || ""
@@ -322,6 +384,7 @@ export default function App() {
             sendIcon={sendIcon}
             inputRef={textInputRef}
           />
+        </View>
           
         </View>
         )}
@@ -332,10 +395,6 @@ export default function App() {
           <View style={{flex: 1, 
             justifyContent: "space-between",
             width: "100%"}}>
-    
-            <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
-              <Image source={menuIcon} style={styles.menuIcon} />
-            </TouchableOpacity>
 
             <OldChatView
               activeChatId = {activeChatId}
@@ -343,6 +402,7 @@ export default function App() {
               handleFileUpload = {handleFileUpload}
             />
 
+            <View style={styles.chatContainer}>
               <ChatBox messages={
                 chatHistory.find(chat => chat.id === activeChatId)?.chatMessages || []
               } summary={chatHistory.find(chat => chat.id === activeChatId)?.summaryResponse || ""
@@ -355,14 +415,10 @@ export default function App() {
                 sendIcon={sendIcon}
                 inputRef={textInputRef}
               />
+            </View>
 
           </View>
           )}
-
-        {/* sidebar menu button to toggle visibility */}
-        {/* <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
-          <Image source={menuIcon} style={styles.menuIcon} />
-        </TouchableOpacity> */}
 
         {/* text input field to enter user input */}
       </View>

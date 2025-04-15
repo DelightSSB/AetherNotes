@@ -1,9 +1,11 @@
 import React, { useRef, useEffect } from "react";
-import { FlatList, View, Text, StyleSheet } from "react-native";
+import { FlatList, View, Text, StyleSheet, Image } from "react-native";
 import styles from "../styles";
 
+
+
 export default function ChatBox({ messages}){
-    
+    const AetherLogo = require('../assets/AetherNotesIconDarkBlue.png');
     const flatListRef = useRef(null);
 
     useEffect(() => {
@@ -22,13 +24,33 @@ export default function ChatBox({ messages}){
             data = {messages}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
-                <View
-                style={[chatBox.messageBubble,
-                    item.sender === "user" ? chatBox.userBubble : chatBox.aiBubble
-                ]}
-                >
+              <View style={{marginBottom: 16}}>
+                {item.sender === "user" ?(
+                <View style={[chatBox.userBubble, {backgroundColor: "transparent"}]}>
+                    <Text style={{alignSelf: "flex-end", marginRight: 45, paddingBottom: 5,}}> You </Text>
+                  <View style={[chatBox.messageBubble, chatBox.userBubble]}>
                     <Text style={styles.messageText}>{item.message}</Text>
+                  </View>
                 </View>
+                ) : (
+                  <View style={[chatBox.aiBubble, {backgroundColor: "transparent"}]}>
+                  <View style={chatBox.aiHeader}>
+                    <Image source={AetherLogo} style={chatBox.logoIcon} />
+                  </View>
+                  <View style={[chatBox.messageBubble, chatBox.aiBubble]}>
+                    <Text style={styles.messageText}>{item.message}</Text>
+                  </View>
+                </View>
+                )}
+
+              </View>
+                // <View
+                // style={[chatBox.messageBubble,
+                //     item.sender === "user" ? chatBox.userBubble : chatBox.aiBubble
+                // ]}
+                // >
+                //     <Text style={styles.messageText}>{item.message}</Text>
+                // </View>
                 )}
 
                 contentContainerStyle={chatBox.chatContent}
@@ -51,20 +73,28 @@ const chatBox = StyleSheet.create({
     paddingBottom: 10,
 },
   messageBubble: {
-    padding: 10,
+    padding: 7,
     borderRadius: 10,
-    marginVertical: 10,
-    // marginHorizontal: 120,
     maxWidth: "75%",
 },
   userBubble: {
-    backgroundColor: "#DCF8C6",
+    
+    backgroundColor: "rgba(15 ,130 ,198 , .4)",
     alignSelf: "flex-end",
-    marginRight: 40
+    marginRight: 40,
   },
   aiBubble: {
-    backgroundColor: "#EEE",
+    backgroundColor: "rgba(199,200,216,.8)",
     alignSelf: "flex-start",
     marginRight: 50
 },
+logoIcon: {
+  width: 35,
+  height: 35,
+  resizeMode: "contain",
+},
+aiHeader: {
+  flexDirection: "row",
+  alignItems: "center",
+},        
 })
