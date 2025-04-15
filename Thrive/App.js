@@ -160,12 +160,12 @@ export default function App() {
 
         setChatHistory(updatedHistory);
         saveChats(updatedHistory);
-
+      }
     } catch (error) {
         console.error("Error sending summary request:", error);
     }
     
- };
+  };
 
   //show pop up instead of immediate upload
   const handleFileUpload = () => {
@@ -198,14 +198,13 @@ export default function App() {
       sender: "user",
       message: textInput.trim(),
       companyName,
-    };
-  
+    };  
 
     // Immediately update state using a functional update to ensure you're working with the latest chatHistory
     setChatHistory(prevChats =>
       prevChats.map(chat => {
         if (chat.id === activeChatId) {
-          return { ...chat, chatMessages: [...chat.chatMessages, userMessage] };
+          return { ...chat, chatMessages: [...chat.chatMessages, newMessage] };
         }
         return chat;
       })
@@ -217,7 +216,7 @@ export default function App() {
     textInputRef.current?.focus();
   
     try {
-      const response = await axios.post("http://localhost:3000/prompt", userMessage);
+      const response = await axios.post("http://localhost:3000/prompt", newMessage);
       const aiResponse = {
         sender: "ai",
         message: response.data.choices[0].message.content,
@@ -239,6 +238,7 @@ export default function App() {
       // Optionally show an error message to the user
     }
   };
+}
   
 
   //upload after company name is submitted
