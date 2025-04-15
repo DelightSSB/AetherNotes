@@ -4,17 +4,19 @@ import styles from "../styles";
 import {ChatBox, AISummary} from "./chatBox";
 
 // Blank view from the launch of the site
-export function LaunchView({}){
+export function LaunchView({logo, handleFileUpload}){
     return(
-        <View style={{paddingTop: 100}}>
-  
-        <Text style={[styles.thirdText, { textAlign: 'center'}, {alignSelf: "center"}, {paddingTop: 1}, {paddingBottom: 1}]}>
-          Chat ID: None
-          </Text>
-        <Text style={[styles.standardText, { textAlign: 'center'}, {alignSelf: "center"}, {paddingTop: 1}]}>
-          Press "New Notes Summary" to create a chat!
-        </Text>
-        </View>
+
+        <View style={chatView.buttonContainer}>
+
+            {/* text indicating allowed file types */}
+            <Text style={chatView.thirdText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
+
+            {/* button for file upload */}
+            <TouchableOpacity style={chatView.uploadButton} onPress={handleFileUpload}>
+              <Text style={chatView.uploadButtonText}>UPLOAD A FILE</Text>
+            </TouchableOpacity>
+          </View>
     )
 }
 
@@ -24,21 +26,16 @@ export function NewChatView({activeChatId, logo, handleFileUpload}){
   
           <View style={chatView.buttonContainer}>
             {/* To display the current chat the user is looking in (for testing) */}
-            <Text style={[styles.thirdText, { textAlign: 'center'}, {paddingTop: 1}]}>
+            {/* <Text style={[chatView.thirdText, { textAlign: 'center'}, {paddingTop: 1}]}>
               New Chat ID: {activeChatId}
-              </Text>
-
-            {/* logo container */}
-            <View style={styles.logoContainer}>
-            <Image source={logo} style={styles.logo} />
-            </View>
+              </Text> */}
 
             {/* text indicating allowed file types */}
-            <Text style={styles.thirdText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
+            <Text style={chatView.thirdText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
 
             {/* button for file upload */}
-            <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
-              <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
+            <TouchableOpacity style={chatView.uploadButton} onPress={handleFileUpload}>
+              <Text style={chatView.uploadButtonText}>UPLOAD A FILE</Text>
             </TouchableOpacity>
           </View>
 
@@ -51,21 +48,16 @@ export function OldChatView({activeChatId, logo, handleFileUpload}){
 
           <View style={chatView.buttonContainer}>
           {/* To display the current chat the user is looking in (for testing) */}
-          <Text style={[styles.thirdText, { textAlign: 'center'}, {paddingTop: 1},]}>
+          {/* <Text style={[chatView.thirdText, { textAlign: 'center'}, {paddingTop: 1},]}>
             This is an old chat with ID: {activeChatId}
-            </Text>
-
-          {/* logo container */}
-          <View style={styles.logoContainer}>
-          <Image source={logo} style={styles.logo} />
-          </View>
+            </Text> */}
 
           {/* text indicating allowed file types */}
-          <Text style={styles.thirdText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
+          <Text style={chatView.thirdText}>Only .PDF, .DOCX, & .TXT files are allowed.</Text>
 
           {/* button for file upload */}
-          <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
-            <Text style={styles.uploadButtonText}>UPLOAD A FILE</Text>
+          <TouchableOpacity style={chatView.uploadButton} onPress={handleFileUpload}>
+            <Text style={chatView.uploadButtonText}>UPLOAD A FILE</Text>
           </TouchableOpacity>
           </View>
     )
@@ -87,8 +79,8 @@ export function TextBox ({textInput, sendIcon, setTextInput, handleSend, inputRe
 
           />
           {/* send icon button next to the text input box */}
-          <TouchableOpacity style={styles.sendIconContainer} onPress={handleSend}>
-            <Image source={sendIcon} style={styles.sendIcon} />
+          <TouchableOpacity style={chatView.sendIconContainer} onPress={handleSend}>
+            <Image source={sendIcon} style={chatView.sendIcon} />
           </TouchableOpacity>
           {/*auto prop adjusts the status bar styling based on the background of the screen*/}
         <StatusBar style="auto" />
@@ -101,9 +93,10 @@ const chatView = StyleSheet.create({
   buttonContainer:{
     width: "25%",
     alignSelf: "center",
-    marginTop: 80,
+    marginTop: 30,
   },
   thirdText: {
+    alignSelf: "center",
     fontSize: 14, 
     fontWeight: "bold",
     color:"#666",
@@ -127,9 +120,46 @@ const chatView = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.5)',
     borderRadius: 18,
     borderWidth: 4,
-    borderColor: '#293D74',
+    borderColor: 'rgba(0, 0, 0, .7)',
     fontSize: 16,
     fontFamily: styles.fontFamily, // Consistent font family for text input
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  uploadButton: {
+    marginTop: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    backgroundColor: 'rgb(41, 61, 122)',
+    // backgroundColor: '#000', // black background for button 
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  uploadButtonText: {
+    color: '#fff',  // white text color on the button
+    fontSize: 16,
+    fontWeight: 'bold',
+    fontFamily: styles.fontFamily, 
+  },
+  logo: {
+    width: 200,
+    height: 80,
+    resizeMode: 'contain',
+  },
+  sendIconContainer: {
+    marginLeft: 10,
+  },
+  sendIcon: {
+    width: 30,
+    height: 30,
+    resizeMode: 'contain',
+  },
+  AetherNotesLogo: {
+    alignSelf: "center",
+    fontFamily: "Exo2_600SemiBold",
+    fontSize: 55
   },
 
 

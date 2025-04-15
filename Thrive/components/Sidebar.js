@@ -1,75 +1,88 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, TextInput } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, Dimensions, TextInput} from 'react-native';
 import styles from "../styles";
+import "@expo/metro-runtime";
 
+const screenWidth = Dimensions.get('window').width;
 export default function Sidebar({chatHistory, makeNewChat, setActiveChatId, setNewChatView, deleteChat}){
+
+  const thriveLogo = require('../assets/ThriveLogoSqr.png');
+
 return(
-<View style={sidebar.sidebar}>
-          <Text style={sidebar.sidebarTitle}>History</Text>
+  <View style={sidebar.sidebarContainer}>
 
-          {/*Code for "new chat" buttons */}
-          <TouchableOpacity style={sidebar.newChatButton} onPress={makeNewChat}>
-          <Text style={sidebar.newChatButtonText}>New Notes Summary</Text>
-        </TouchableOpacity>
+    <Image source={thriveLogo} style={sidebar.logo} />
 
-        
-        <FlatList
-          //This flatlist takes in the array chatHistory which is story the chats created
-          // each object is a file with properties id, title, and timestamp 
-            data={chatHistory}
+    <Text style={sidebar.sidebarTitle}>History</Text>
 
-            // each item requires a unique string (#)
-            keyExtractor={(item) => item.id.toString()}
+    {/*Code for "new chat" buttons */}
+    <TouchableOpacity style={sidebar.newChatButton} onPress={makeNewChat}>
+    <Text style={sidebar.newChatButtonText}>New Notes Summary</Text>
+    </TouchableOpacity>
 
-            // renders each items from the chatHistory array and makes them a button to be used to restore their history
-            renderItem={({ item }) => (
-              <View style={sidebar.buttonContainer}>
-                <TouchableOpacity 
-                style={sidebar.deleteButton}
-                onPress={() => deleteChat(item.id)}>
-                <Text style={{fontSize: 16, color: "red"}}> X </Text>
-                </TouchableOpacity>
 
-                <TouchableOpacity
-                onPress={() => {
-                  setActiveChatId(item.id);
-                  setNewChatView(false)
-                }}>
-                  {/* Displays the title and the date it was created */}
-                <View style={sidebar.historyItem}>
-                  <Text style={sidebar.historyText}>{item.title}</Text>
-                  <Text style={sidebar.historyDate}>Created on {item.timestamp}</Text>
-                </View>
-                </TouchableOpacity>
+    <FlatList
+    //This flatlist takes in the array chatHistory which is story the chats created
+    // each object is a file with properties id, title, and timestamp 
+      data={chatHistory}
 
-              </View>
-            )}
-          />
-          {/* End of building sidebar */}
+      // each item requires a unique string (#)
+      keyExtractor={(item) => item.id.toString()}
+
+      // renders each items from the chatHistory array and makes them a button to be used to restore their history
+      renderItem={({ item }) => (
+        <View style={sidebar.buttonContainer}>
+          <TouchableOpacity 
+          style={sidebar.deleteButton}
+          onPress={() => deleteChat(item.id)}>
+          <Text style={{fontSize: 16, color: "rgb(241, 90, 41)"}}> X </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+          onPress={() => {
+            setActiveChatId(item.id);
+            setNewChatView(false)
+          }}>
+            {/* Displays the title and the date it was created */}
+          <View style={sidebar.historyItem}>
+            <Text style={sidebar.historyText}>{item.title}</Text>
+            <Text style={sidebar.historyDate}>Created on {item.timestamp}</Text>
+          </View>
+          </TouchableOpacity>
+
         </View>
+      )}
+    />
+    {/* End of building sidebar */}
+  </View>
     )
 }
 
 const sidebar = StyleSheet.create({
+  
   buttonContainer:{
     flexDirection: "row",
     // alignItems: "center",
     // justifyContent: "space-between",
     paddingRight: 5
   },
-
+  logo: {
+    alignSelf: "center",
+    width: screenWidth > 1440 ? 200 : screenWidth * 0.2,  
+    height: screenWidth > 1440 ? 200 : screenWidth * 0.2,
+    resizeMode: 'contain'
+  },
   deleteButton: {
     padding: 6,
     marginLeft: 10,
   },
 
-  sidebar: {
+  sidebarContainer: {
     flex: 1,
-    width: 250,
-    backgroundColor: 'rgba(244, 244, 244, .5)', // semi-transparent background for sidebar 
+    backgroundColor: 'rgba(199, 200, 216, 1)',
     padding: 15,
-    borderRightWidth: 1,
-    borderRightColor: '#ccc',
+    borderRightWidth: 3,
+    borderRightColor: 'rgba(46, 48, 55, .5)',
   },
   sidebarTitle: {
     fontSize: 18,

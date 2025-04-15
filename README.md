@@ -20,6 +20,12 @@ Stretch Goals:
 - Salesforce and ServiceNow push of data to API
 - Integration with OneNote
 
+With how the project is now (At the time of April 14th, 2025) you need to run
+npx expo install expo-app-loading  
+and
+npx expo install @expo-google-fonts/exo-2 expo-font
+in order to load the custom font for the logo.
+
 
 
 
