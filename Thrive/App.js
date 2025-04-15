@@ -121,15 +121,10 @@ export default function App() {
         const response = await axios.post("http://localhost:3000/summary", {
             text: text 
         });
-
-        
-        
-        // console.log("Response:", response.data.choices[0].message.content); // this is the responce from the AI. It is formatted in markdown
-
-
         //Stores the response as a variable
         //Stores ai summary response as the active chat's variable, this is immutably changed so an update should be automatic
-        const aiResponse = "Response:"+ response.data.choices[0].message.content
+        const aiResponse =  response.data.choices[0].message.content
+        
         
         //Adds the response as a message from the ai
         const updatedHistory = chatHistory.map(chat =>
@@ -140,12 +135,13 @@ export default function App() {
               }
             : chat
         );
+        setChatHistory(updatedHistory);
+        saveChats(updatedHistory);
 
     } catch (error) {
         console.error("Error sending summary request:", error);
     }
-    setChatHistory(updatedHistory);
-    saveChats(updatedHistory);
+    
  };
 
   //show pop up instead of immediate upload
@@ -153,29 +149,54 @@ export default function App() {
     setCompanyModalVisible(true);
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!textInput.trim()) return; // Don't send empty messages
   
-    const newMessage = {
+    const userMessage = {
       sender: "user",
-      message: textInput.trim()
+      message: textInput.trim(),
+      companyName,
     };
   
-    // Add the message to the active chat
-    const updatedHistory = chatHistory.map(chat =>
-      chat.id === activeChatId
-        ? {
-            ...chat,
-            chatMessages: [...chat.chatMessages, newMessage]
-          }
-        : chat
+    // Immediately update state using a functional update to ensure you're working with the latest chatHistory
+    setChatHistory(prevChats =>
+      prevChats.map(chat => {
+        if (chat.id === activeChatId) {
+          return { ...chat, chatMessages: [...chat.chatMessages, userMessage] };
+        }
+        return chat;
+      })
     );
+    saveChats(chatHistory); // Optionally, save the chats after appending (or do it in a callback)
   
-    setTextInput(""); // Clear input after sending
-    textInputRef.current?.focus(); //refocus cursor onto chatbox
-    setChatHistory(updatedHistory);
-    saveChats(updatedHistory);
+    // Optionally clear the input right away
+    setTextInput("");
+    textInputRef.current?.focus();
+  
+    try {
+      const response = await axios.post("http://localhost:3000/prompt", userMessage);
+      const aiResponse = {
+        sender: "ai",
+        message: response.data.choices[0].message.content,
+      };
+  
+      // Append the AI response using a functional update so we build on the latest state
+      setChatHistory(prevChats =>
+        prevChats.map(chat => {
+          if (chat.id === activeChatId) {
+            return { ...chat, chatMessages: [...chat.chatMessages, aiResponse] };
+          }
+          return chat;
+        })
+      );
+      aiResponse.current?.focus();
+      // Make sure to save the updated chat history, if needed.
+    } catch (error) {
+      console.error("Error sending prompt request:", error.response?.data || error.message);
+      // Optionally show an error message to the user
+    }
   };
+  
 
   //upload after company name is submitted
   const handleCompanySubmit = async () => {
