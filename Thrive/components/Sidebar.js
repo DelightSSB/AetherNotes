@@ -2,11 +2,13 @@ import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, Dimensions, TextInput} from 'react-native';
 import styles from "../styles";
 import "@expo/metro-runtime";
+import { changeTitle } from "./companyPopup";
 
 const screenWidth = Dimensions.get('window').width;
 export default function Sidebar({chatHistory, makeNewChat, setActiveChatId, setNewChatView, deleteChat}){
 
   const thriveLogo = require('../assets/ThriveLogoSqr.png');
+  const editIcon = require('../assets/edit-pen.png');
 
 return(
   <View style={sidebar.sidebarContainer}>
@@ -37,7 +39,11 @@ return(
           onPress={() => deleteChat(item.id)}>
           <Text style={{fontSize: 16, color: "rgb(241, 90, 41)"}}> X </Text>
           </TouchableOpacity>
-
+          
+          {/* TODO: Implement change title */}
+          <TouchableOpacity style={sidebar.editIconContainer} onPress={changeTitle}>
+            <Image source={editIcon} style={sidebar.editButton} />
+          </TouchableOpacity>
           <TouchableOpacity
           onPress={() => {
             setActiveChatId(item.id);
@@ -120,5 +126,18 @@ const sidebar = StyleSheet.create({
     fontSize: 12,
     color: '#666',  // lighter color for the date text
     fontFamily: styles.fontFamily, // Consistent font family for date
+  },
+  editIconContainer: {
+    position: "absolute",
+    top: 5,
+    right: 5,
+    padding: 4,
+    borderRadius: 4,
+  },
+  editButton: {
+    alignSelf: "flex-end",
+    width: 16,
+    height: 16,
+    resizeMode: "contain",
   },
 })

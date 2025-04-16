@@ -2,13 +2,22 @@ import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, TextInput, Picker } from 'react-native';
 import styles from "../styles";
 
-export default function CompanyPopup ({companyName, setCompanyName, handleCompanySubmit, handleCloseModal }){
+
+export default function CompanyPopup ({companyName, setCompanyName, handleCompanySubmit, title, setTitle, handleCloseModal }){
     return(
         <View style={companyPopup.modalOverlay}>
           <View style={companyPopup.modalBox}>
             <TouchableOpacity style={companyPopup.closeButton} onPress={handleCloseModal}>
               <Text style={companyPopup.closeButtonText}>X</Text>
             </TouchableOpacity>
+            <Text style={companyPopup.modalTitle}>Enter a title for these notes</Text>
+            <TextInput
+            blurOnSubmit={false}
+            style={companyPopup.titleInput}
+            placeholder="Enter Title"
+            value={title}
+            onChangeText={(val) => setTitle(val)}
+            />
             <Text style={companyPopup.modalTitle}>What is your company?</Text>
             <Picker
     selectedValue={companyName}
@@ -95,6 +104,14 @@ const companyPopup = StyleSheet.create({
     color: '#333', 
     fontFamily: styles.fontFamily, 
   },
+  titleInput: {
+    borderRadius: 10,
+    borderWidth: 4,
+    borderColor: 'rgba(0, 0, 0, .7)',
+    fontSize: 10,
+    fontFamily: styles.fontFamily,
+    padding: 10,
+},
   closeButton: {
     position: 'absolute',
     top: 10,

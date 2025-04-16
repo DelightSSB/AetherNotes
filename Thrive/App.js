@@ -30,6 +30,7 @@ export default function App() {
 
   // stores user input from the text field 
   const [textInput, setTextInput] = useState(""); // State for the text input
+  const [title, setTitle] = useState(""); //Stores title for the chat
 
   // stores messages for chatBox
   const[messages, setMessages] = useState([]); //array of the messages saves for a chat
@@ -244,6 +245,31 @@ export default function App() {
   //upload after company name is submitted
   const handleCompanySubmit = async () => {
     setCompanyModalVisible(false);
+    let updatedHistory = [];
+    if(newChatView==null){
+      const newChat = makeNewChat();
+      const updatedTitle = {
+        ...newChat,
+        title: title
+      };
+      updatedHistory = [updatedTitle, ...chatHistory].slice(0,14);
+      setChatHistory(updatedHistory);
+      saveChats(updatedHistory);
+
+    }else{
+    if (textInput.trim()){
+    updatedHistory = chatHistory.map(chat =>
+      chat.id === activeChatId
+        ? {
+            ...chat,
+            title: title
+          }
+        : chat
+    );
+    setChatHistory(updatedHistory);
+    saveChats(updatedHistory);
+  }
+}
     try {
       const doc = await DocumentPicker.getDocumentAsync({
         type: ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'],
@@ -341,6 +367,8 @@ export default function App() {
         companyName = {companyName}
         setCompanyName = {setCompanyName}
         handleCompanySubmit = {handleCompanySubmit}
+        setTitle={setTitle}
+        title={title}
         handleCloseModal={() => setCompanyModalVisible(false)}
         />
       )}
