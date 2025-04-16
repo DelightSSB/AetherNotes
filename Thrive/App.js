@@ -10,7 +10,8 @@ import styles from './styles'
 var mammoth = require("mammoth");
 
 import { LaunchView, NewChatView, OldChatView, TextBox } from "./components/chatView";
-import {CompanyPopup, ChangeTitlePopup} from "./components/companyPopup";
+import CompanyPopup, { ChangeTitlePopup } from "./components/companyPopup";
+
 import ChatBox from "./components/chatBox";
 import Sidebar from "./components/Sidebar";
 import { uploadAsync } from "expo-file-system";
