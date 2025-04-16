@@ -37,6 +37,29 @@ export default function CompanyPopup ({companyName, setCompanyName, handleCompan
     )
 }
 
+export function ChangeTitlePopup ({handleChangeTitle, title, setTitle, closeTitleChange }){
+  return(
+      <View style={companyPopup.modalOverlay}>
+        <View style={companyPopup.modalBox}>
+          <TouchableOpacity style={companyPopup.closeButton} onPress={closeTitleChange}>
+            <Text style={companyPopup.closeButtonText}>X</Text>
+          </TouchableOpacity>
+          <Text style={companyPopup.modalTitle}>Enter a title for these notes</Text>
+          <TextInput
+          blurOnSubmit={false}
+          style={companyPopup.titleInput}
+          placeholder="Enter Title"
+          value={title}
+          onChangeText={(val) => setTitle(val)}
+          />
+          <TouchableOpacity style={companyPopup.modalButton} onPress={handleChangeTitle}>
+            <Text style={companyPopup.modalButtonText}>Confirm</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+  )
+}
+
 const companyPopup = StyleSheet.create({
   // POP UP BOX FOR COMPANY ASSIGNMENT
   modalOverlay: {

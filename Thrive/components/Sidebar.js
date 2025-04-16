@@ -5,7 +5,7 @@ import "@expo/metro-runtime";
 import { changeTitle } from "./companyPopup";
 
 const screenWidth = Dimensions.get('window').width;
-export default function Sidebar({chatHistory, makeNewChat, setActiveChatId, setNewChatView, deleteChat}){
+export default function Sidebar({chatHistory, makeNewChat, setActiveChatId, setNewChatView, deleteChat, changeTitle}){
 
   const thriveLogo = require('../assets/ThriveLogoSqr.png');
   const editIcon = require('../assets/edit-pen.png');
@@ -30,21 +30,17 @@ return(
 
       // each item requires a unique string (#)
       keyExtractor={(item) => item.id.toString()}
-
       // renders each items from the chatHistory array and makes them a button to be used to restore their history
       renderItem={({ item }) => (
         <View style={sidebar.buttonContainer}>
           <TouchableOpacity 
           style={sidebar.deleteButton}
           onPress={() => deleteChat(item.id)}>
-          <Text style={{fontSize: 16, color: "rgb(241, 90, 41)"}}> X </Text>
+          <Text style={{fontSize: 16, color: "rgb(241, 90, 41)", alignSelf: "center",}}> X </Text>
           </TouchableOpacity>
           
-          {/* TODO: Implement change title */}
-          <TouchableOpacity style={sidebar.editIconContainer} onPress={changeTitle}>
-            <Image source={editIcon} style={sidebar.editButton} />
-          </TouchableOpacity>
           <TouchableOpacity
+          style={{flex: 4}}
           onPress={() => {
             setActiveChatId(item.id);
             setNewChatView(false)
@@ -56,6 +52,10 @@ return(
           </View>
           </TouchableOpacity>
 
+          {/* TODO: Implement change title */}
+          <TouchableOpacity style={sidebar.editIconContainer} onPress={changeTitle}>
+            <Image source={editIcon} style={sidebar.editButton} />
+          </TouchableOpacity>
         </View>
       )}
     />
@@ -69,7 +69,7 @@ const sidebar = StyleSheet.create({
   buttonContainer:{
     flexDirection: "row",
     // alignItems: "center",
-    // justifyContent: "space-between",
+    // justifyContent: "center",
     paddingRight: 5
   },
   logo: {
@@ -79,6 +79,9 @@ const sidebar = StyleSheet.create({
     resizeMode: 'contain'
   },
   deleteButton: {
+    height: "50%",
+    flex: 1,
+    justifyContent: "center",
     padding: 6,
     marginLeft: 10,
   },
@@ -128,16 +131,14 @@ const sidebar = StyleSheet.create({
     fontFamily: styles.fontFamily, // Consistent font family for date
   },
   editIconContainer: {
-    position: "absolute",
-    top: 5,
-    right: 5,
+    alignItems: "center",
+    flex: 1,
     padding: 4,
     borderRadius: 4,
   },
   editButton: {
-    alignSelf: "flex-end",
-    width: 16,
-    height: 16,
+    width: 24,
+    height: 24,
     resizeMode: "contain",
   },
 })

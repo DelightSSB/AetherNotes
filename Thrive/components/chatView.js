@@ -21,7 +21,7 @@ export function LaunchView({logo, handleFileUpload}){
 }
 
 // View shown when New Notes Summary button is pressed
-export function NewChatView({activeChatId, logo, handleFileUpload}){
+export function NewChatView({ handleFileUpload}){
     return(
   
           <View style={chatView.buttonContainer}>
