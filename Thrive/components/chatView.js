@@ -94,6 +94,7 @@ const chatView = StyleSheet.create({
     width: "25%",
     alignSelf: "center",
     marginTop: 30,
+    marginBottom: 10,
   },
   thirdText: {
     alignSelf: "center",
