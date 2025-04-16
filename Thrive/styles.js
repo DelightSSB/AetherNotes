@@ -71,8 +71,8 @@ const styles = StyleSheet.create({
   chatContainer:{
     borderRadius: 18,
     borderStyle: "dashed",
-    borderColor: 'rgba(41, 61, 122, .9)',
-    borderWidth: 4,
+    borderColor: 'rgba(41, 61, 122, .8)',
+    borderWidth: 2,
     alignSelf: "center",
     width: "50%",
     height: "75%",

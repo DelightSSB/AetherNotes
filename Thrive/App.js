@@ -10,7 +10,7 @@ import styles from './styles'
 var mammoth = require("mammoth");
 
 import { LaunchView, NewChatView, OldChatView, TextBox } from "./components/chatView";
-import CompanyPopup from "./components/companyPopup";
+import {CompanyPopup, ChangeTitlePopup} from "./components/companyPopup";
 import ChatBox from "./components/chatBox";
 import Sidebar from "./components/Sidebar";
 import { uploadAsync } from "expo-file-system";
@@ -30,12 +30,14 @@ export default function App() {
 
   // stores user input from the text field 
   const [textInput, setTextInput] = useState(""); // State for the text input
+  const [title, setTitle] = useState(""); //Stores title for the chat
 
   // stores messages for chatBox
   const[messages, setMessages] = useState([]); //array of the messages saves for a chat
 
    //pop up visibility and input state
   const[companyModalVisible, setCompanyModalVisible] = useState(false);
+  const[changeTitleModal, setChangeTitleModal] = useState(false);
   // Company name storage for backend assignment
   const [companyName, setCompanyName] = useState('');
 
@@ -56,6 +58,16 @@ export default function App() {
   const [fontsLoaded] = useFonts({
     Exo2_600SemiBold,
   });
+
+  //AetherNotes' Intro as the first message it sends
+  const ANIntro = `Hi there! I'm AetherNotes here for all your summarization needs! Before we get started, here are a few quick guidelines to make both our experiences as smooth as possible
+
+  1. Upload clean, relevant notes — the more focused your file, the better the summary.
+  2. Ask me follow-up questions — I can explain or expand on any part of the summary.
+  3. Don't confuse me with your files! I currently only accept PDF, DOCX, and TXT files. (Hopefully more later :) )
+  4. While I work on upgrading my memory, remember that your chats are saved to this machine only.
+  
+  If that was clear then lets get started! Upload a file or start typing to begin!`;
 
   // if (!fontsLoaded) {
   //   return null; // or null if you're not using AppLoading
@@ -82,7 +94,7 @@ export default function App() {
       chatMessages: [
         {
           sender: "ai",
-          message: "How can I help today?"
+          message: ANIntro
         }
     ]
     }; 
@@ -172,6 +184,10 @@ export default function App() {
     setCompanyModalVisible(true);
   };
 
+  const changeTitle = () => {
+    setChangeTitleModal(true);
+  };
+
   //Handles sending a message and adding it to chatBox
   const handleSendMessage = async () => {
     if (!textInput.trim()) return; // Don't send empty messages
@@ -241,9 +257,65 @@ export default function App() {
 }
   
 
+  const handleChangeTitle = () => {
+    setChangeTitleModal(false);
+    if (title.trim()){
+    let updatedHistory = [];
+    if(newChatView==null){
+      const newChat = makeNewChat();
+      const updatedTitle = {
+        ...newChat,
+        title: title
+      };
+      updatedHistory = [updatedTitle, ...chatHistory].slice(0,14);
+      setChatHistory(updatedHistory);
+      saveChats(updatedHistory);
+
+    }else{
+    updatedHistory = chatHistory.map(chat =>
+      chat.id === activeChatId
+        ? {
+            ...chat,
+            title: title
+          }
+        : chat
+    );
+    setChatHistory(updatedHistory);
+    saveChats(updatedHistory);
+  }
+  setTitle("");
+}
+  };
+
   //upload after company name is submitted
   const handleCompanySubmit = async () => {
     setCompanyModalVisible(false);
+    if (title.trim()){
+    let updatedHistory = [];
+    if(newChatView==null){
+      const newChat = makeNewChat();
+      const updatedTitle = {
+        ...newChat,
+        title: title
+      };
+      updatedHistory = [updatedTitle, ...chatHistory].slice(0,14);
+      setChatHistory(updatedHistory);
+      saveChats(updatedHistory);
+
+    }else{
+    updatedHistory = chatHistory.map(chat =>
+      chat.id === activeChatId
+        ? {
+            ...chat,
+            title: title
+          }
+        : chat
+    );
+    setChatHistory(updatedHistory);
+    saveChats(updatedHistory);
+  }
+  setTitle("");
+}
     try {
       const doc = await DocumentPicker.getDocumentAsync({
         type: ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'],
@@ -326,6 +398,7 @@ export default function App() {
         setNewChatView = {setNewChatView}
         makeNewChat = {makeNewChat}
         deleteChat={deleteChat}
+        changeTitle={changeTitle}
         />
       )}
       
@@ -341,6 +414,18 @@ export default function App() {
         companyName = {companyName}
         setCompanyName = {setCompanyName}
         handleCompanySubmit = {handleCompanySubmit}
+        setTitle={setTitle}
+        title={title}
+        handleCloseModal={() => setCompanyModalVisible(false)}
+        />
+      )}
+
+      {changeTitleModal && (
+        <ChangeTitlePopup
+        handleChangeTitle = {handleChangeTitle}
+        setTitle={setTitle}
+        title={title}
+        closeTitleChange={() => setChangeTitleModal(false)}
         />
       )}
 
@@ -364,7 +449,7 @@ export default function App() {
               chatHistory.find(chat => chat.id === activeChatId)?.chatMessages || [
                 {
                   sender: "ai",
-                  message: "How can I help today?"
+                  message: ANIntro
                 }
             ]
             } summary={chatHistory.find(chat => chat.id === activeChatId)?.summaryResponse || ""

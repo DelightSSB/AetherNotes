@@ -21,7 +21,7 @@ export function LaunchView({logo, handleFileUpload}){
 }
 
 // View shown when New Notes Summary button is pressed
-export function NewChatView({activeChatId, logo, handleFileUpload}){
+export function NewChatView({ handleFileUpload}){
     return(
   
           <View style={chatView.buttonContainer}>
@@ -94,6 +94,7 @@ const chatView = StyleSheet.create({
     width: "25%",
     alignSelf: "center",
     marginTop: 30,
+    marginBottom: 10,
   },
   thirdText: {
     alignSelf: "center",
