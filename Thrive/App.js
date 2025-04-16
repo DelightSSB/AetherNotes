@@ -341,6 +341,7 @@ export default function App() {
         companyName = {companyName}
         setCompanyName = {setCompanyName}
         handleCompanySubmit = {handleCompanySubmit}
+        handleCloseModal={() => setCompanyModalVisible(false)}
         />
       )}
 
