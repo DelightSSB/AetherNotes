@@ -25,9 +25,9 @@ export default function CompanyPopup ({companyName, setCompanyName, handleCompan
     onValueChange={(itemValue) => setCompanyName(itemValue)}
   >
     <Picker.Item label="Select Company" value="" />  {/* Default option */}
-    <Picker.Item label="Company 1" value="Company 1" />
-    <Picker.Item label="Company 2" value="Company 2" />
-    <Picker.Item label="Company 3" value="Company 3" />
+    <Picker.Item label="The Foster Protocol" value="The Foster Protocol" />
+    <Picker.Item label="Ctrl+Channing" value="Ctrl+Channing" />
+    <Picker.Item label="Mike & Byte" value="Mike & Byte" />
   </Picker>
             <TouchableOpacity style={companyPopup.modalButton} onPress={handleCompanySubmit}>
               <Text style={companyPopup.modalButtonText}>Continue</Text>
