@@ -72,7 +72,7 @@ export function TextBox ({textInput, sendIcon, setTextInput, handleSend, inputRe
           ref={inputRef}
           blurOnSubmit={false}
           style={chatView.textInput}
-          placeholder="What do you need?"
+          placeholder="Type a message..."
           value={textInput}
           onChangeText={(val) => setTextInput(val)}
           onSubmitEditing={handleSend } // Pressing "Enter" triggers send
@@ -111,8 +111,11 @@ const chatView = StyleSheet.create({
   textInputContainer: {
     marginBottom: 10,
     paddingHorizontal: 10,
-    // width: '80%',
+    paddingVertical: 5,
+    width: '98%',
     flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'center',
   },
     // TEXT INPUT BOX 
   textInput: {
@@ -120,8 +123,8 @@ const chatView = StyleSheet.create({
     padding: 10,
     backgroundColor: 'rgba(255, 255, 255, 0.5)',
     borderRadius: 18,
-    borderWidth: 4,
-    borderColor: 'rgba(0, 0, 0, .7)',
+    borderWidth: 1,
+    borderColor: 'rgba(41, 61, 122)',
     fontSize: 16,
     fontFamily: styles.fontFamily, // Consistent font family for text input
   },
@@ -151,6 +154,8 @@ const chatView = StyleSheet.create({
   },
   sendIconContainer: {
     marginLeft: 10,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   sendIcon: {
     width: 30,
