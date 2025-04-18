@@ -86,12 +86,14 @@ const chatBox = StyleSheet.create({
   aiBubble: {
     backgroundColor: "rgba(199,200,216,.8)",
     alignSelf: "flex-start",
-    marginRight: 50
+    marginRight: 50,
+    marginLeft: 7,
 },
 logoIcon: {
   width: 35,
   height: 35,
   resizeMode: "contain",
+  marginBottom: 5,
 },
 aiHeader: {
   flexDirection: "row",

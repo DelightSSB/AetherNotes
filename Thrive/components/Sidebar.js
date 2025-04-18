@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, Dimensions, 
 import styles from "../styles";
 import "@expo/metro-runtime";
 import { changeTitle } from "./companyPopup";
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const screenWidth = Dimensions.get('window').width;
 export default function Sidebar({chatHistory, makeNewChat, setActiveChatId, setNewChatView, deleteChat, changeTitle}){
@@ -15,14 +16,14 @@ return(
 
     <Image source={thriveLogo} style={sidebar.logo} />
 
-    <Text style={sidebar.sidebarTitle}>History</Text>
-
     {/*Code for "new chat" buttons */}
     <TouchableOpacity style={sidebar.newChatButton} onPress={makeNewChat}>
+    <Image source={editIcon} style={sidebar.newChatButtonIcon} />
     <Text style={sidebar.newChatButtonText}>New Notes Summary</Text>
     </TouchableOpacity>
 
-
+    <View style={sidebar.historyContainer}>
+    <Text style={sidebar.historyTitle}>Chat History</Text>
     <FlatList
     //This flatlist takes in the array chatHistory which is story the chats created
     // each object is a file with properties id, title, and timestamp 
@@ -36,7 +37,11 @@ return(
           <TouchableOpacity 
           style={sidebar.deleteButton}
           onPress={() => deleteChat(item.id)}>
-          <Text style={{fontSize: 16, color: "rgb(241, 90, 41)", alignSelf: "center",}}> X </Text>
+          <Ionicons
+                    name="close-circle"
+                    size={20}
+                    color="rgb(241, 90, 41)"
+                  />
           </TouchableOpacity>
           
           <TouchableOpacity
@@ -59,6 +64,7 @@ return(
         </View>
       )}
     />
+    </View>
     {/* End of building sidebar */}
   </View>
     )
@@ -67,10 +73,10 @@ return(
 const sidebar = StyleSheet.create({
   
   buttonContainer:{
-    flexDirection: "row",
-    // alignItems: "center",
-    // justifyContent: "center",
-    paddingRight: 5
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'flex-end', 
+    gap: 5,
   },
   logo: {
     alignSelf: "center",
@@ -79,13 +85,10 @@ const sidebar = StyleSheet.create({
     resizeMode: 'contain'
   },
   deleteButton: {
-    height: "50%",
-    flex: 1,
-    justifyContent: "center",
-    padding: 6,
-    marginLeft: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 2,
   },
-
   sidebarContainer: {
     flex: 1,
     backgroundColor: 'rgba(199, 200, 216, 1)',
@@ -100,13 +103,22 @@ const sidebar = StyleSheet.create({
     fontFamily: styles.fontFamily, // Consistent font family for sidebar title
   },
   newChatButton: {
-    marginTop: 10,
+    marginTop: 20,
     backgroundColor: 'rgb(41, 61, 122)',
-    paddingVertical: 22,
+    paddingVertical: 12,
     paddingHorizontal: 20,
     // backgroundColor: '#000', // black background for button 
     borderRadius: 10,
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center'
+  },
+  newChatButtonIcon: {
+    width: 24, 
+    height: 24,
+    marginRight: 7,
+    resizeMode: 'contain',
+    tintColor: '#fff',
   },
   newChatButtonText: {
     color: '#fff',  
@@ -114,6 +126,23 @@ const sidebar = StyleSheet.create({
     
     fontWeight: 'bold',
     fontFamily: styles.fontFamily, 
+  },
+  historyContainer: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#f5f5f5', // Light background for the history section
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  historyTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'rgb(41, 61, 122)', // Match the primary color
+    marginBottom: 10,
+    fontFamily: styles.fontFamily,
   },
   historyItem: {
     paddingVertical: 8,
