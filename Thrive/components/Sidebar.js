@@ -6,7 +6,7 @@ import { changeTitle } from "./companyPopup";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const screenWidth = Dimensions.get('window').width;
-export default function Sidebar({chatHistory, makeNewChat, setActiveChatId, setNewChatView, deleteChat, changeTitle}){
+export default function Sidebar({chatHistory, makeNewChat, setActiveChatId, setNewChatView, setDeleteModal, setChangeTitleModal}){
 
   const thriveLogo = require('../assets/ThriveLogoSqr.png');
   const editIcon = require('../assets/edit-pen.png');
@@ -36,7 +36,10 @@ return(
         <View style={sidebar.buttonContainer}>
           <TouchableOpacity 
           style={sidebar.deleteButton}
-          onPress={() => deleteChat(item.id)}>
+          onPress={() => {
+            setActiveChatId(item.id); 
+            setDeleteModal(true)
+          }}>
           <Ionicons
                     name="close-circle"
                     size={20}
@@ -58,7 +61,7 @@ return(
           </TouchableOpacity>
 
           {/* TODO: Implement change title */}
-          <TouchableOpacity style={sidebar.editIconContainer} onPress={changeTitle}>
+          <TouchableOpacity style={sidebar.editIconContainer} onPress={() => {setActiveChatId(item.id); setNewChatView(false); setChangeTitleModal(true)}}>
             <Image source={editIcon} style={sidebar.editButton} />
           </TouchableOpacity>
         </View>

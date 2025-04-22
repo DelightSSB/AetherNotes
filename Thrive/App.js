@@ -10,7 +10,7 @@ import styles from './styles'
 var mammoth = require("mammoth");
 
 import { LaunchView, NewChatView, OldChatView, TextBox } from "./components/chatView";
-import CompanyPopup, { ChangeTitlePopup } from "./components/companyPopup";
+import CompanyPopup, { ChangeTitlePopup, ConfirmDelete } from "./components/companyPopup";
 
 import ChatBox from "./components/chatBox";
 import Sidebar from "./components/Sidebar";
@@ -39,6 +39,7 @@ export default function App() {
    //pop up visibility and input state
   const[companyModalVisible, setCompanyModalVisible] = useState(false);
   const[changeTitleModal, setChangeTitleModal] = useState(false);
+  const[deleteModal, setDeleteModal] = useState(false);
   // Company name storage for backend assignment
   const [companyName, setCompanyName] = useState('');
 
@@ -83,12 +84,40 @@ export default function App() {
 
   // Creates a new chat. Defaults chat ID to length of history, gives the new chat a title, and records the time the chat was made
   const makeNewChat = () => {
-    const chatID = chatHistory.length + 1;
+    const chatID = Date.now();
     // const summaryResponse = "Summary test"
     //Creates a new chat object with a unique ID, a title to view on the sidebar, and date on when it was created (saved as a string) 
     const newChat = {
       id: chatID,
-      title: `Chat ${chatID}`, //variable to be updated when the popup menu is implemented
+      title: `New Chat`, //variable to be updated when the popup menu is implemented
+      timestamp: new Date().toLocaleString(),
+
+      //Array of chats, these are automatically updated as the user and ai respond to each other
+      chatMessages: [
+        {
+          sender: "ai",
+          message: ANIntro
+        }
+    ]
+    }; 
+    
+    const updatedHistory = [newChat, ... chatHistory].slice(0,14); //Adds this newChat object to the chatHistory array (This adds this chat to the beginning of the array rather than the end) only 14 chats can be saved
+
+    setChatHistory(updatedHistory); 
+    setActiveChatId(chatID); //Sets the active chat to the one just created, ensures the new chat you're editing is the newest one created assuming you stay in the chat
+    setNewChatView(true); //Ensures the view is automatically changed when the button is pressed
+    saveChats(updatedHistory);
+
+    return newChat;
+  };
+
+  const customChat = (customTitle = null) => {
+    const chatID = Date.now();
+    // const summaryResponse = "Summary test"
+    //Creates a new chat object with a unique ID, a title to view on the sidebar, and date on when it was created (saved as a string) 
+    const newChat = {
+      id: chatID,
+      title: customTitle ||  `New Chat`, //variable to be updated when the popup menu is implemented
       timestamp: new Date().toLocaleString(),
 
       //Array of chats, these are automatically updated as the user and ai respond to each other
@@ -151,7 +180,7 @@ export default function App() {
         
         
         if(newChatView===null){
-          const newChat = makeNewChat();
+          const newChat = customChat(title);
           const updatedMessaging = {
             ...newChat,
             chatMessages: [...newChat.chatMessages, {sender: "ai", message: aiResponse}]
@@ -188,6 +217,10 @@ export default function App() {
   const changeTitle = () => {
     setChangeTitleModal(true);
   };
+
+  deletePopup = () => {
+    setDeleteModal(true);
+  }
 
   //Handles sending a message and adding it to chatBox
   const handleSendMessage = async () => {
@@ -294,15 +327,7 @@ export default function App() {
     if (title.trim()){
     let updatedHistory = [];
     if(newChatView==null){
-      const newChat = makeNewChat();
-      const updatedTitle = {
-        ...newChat,
-        title: title
-      };
-      updatedHistory = [updatedTitle, ...chatHistory].slice(0,14);
-      setChatHistory(updatedHistory);
-      saveChats(updatedHistory);
-
+      const newChat = customChat(title);
     }else{
     updatedHistory = chatHistory.map(chat =>
       chat.id === activeChatId
@@ -399,7 +424,8 @@ export default function App() {
         setNewChatView = {setNewChatView}
         makeNewChat = {makeNewChat}
         deleteChat={deleteChat}
-        changeTitle={changeTitle}
+        setChangeTitleModal={setChangeTitleModal}
+        setDeleteModal={setDeleteModal}
         />
       )}
       
@@ -418,6 +444,7 @@ export default function App() {
         setTitle={setTitle}
         title={title}
         handleCloseModal={() => setCompanyModalVisible(false)}
+        curTitle = {chatHistory.find(chat => chat.id === activeChatId)?.title}
         />
       )}
 
@@ -427,6 +454,16 @@ export default function App() {
         setTitle={setTitle}
         title={title}
         closeTitleChange={() => setChangeTitleModal(false)}
+        curTitle = {chatHistory.find(chat => chat.id === activeChatId)?.title}
+        />
+      )}
+
+      {deleteModal && (
+        <ConfirmDelete
+        setDeleteModal={setDeleteModal}
+        curTitle = {chatHistory.find(chat => chat.id === activeChatId)?.title}
+        ID = {chatHistory.find(chat => chat.id === activeChatId)?.id}
+        deleteChat = {deleteChat}
         />
       )}
 
