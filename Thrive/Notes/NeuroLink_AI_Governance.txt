@@ -1,0 +1,37 @@
+**NeuroLink AI Governance and Compliance Meeting**
+
+**1. Purpose of Meeting**
+Discuss governance strategies for AI model deployment across medical diagnostic platforms. Ensure all initiatives align with HIPAA, GDPR, and FDA regulatory standards. Focus areas included data annotation practices, bias mitigation, and audit traceability.
+
+**2. Regulatory Requirements Review**
+- HIPAA: Encrypt patient data at rest and in transit; implement audit logs for access to PHI.
+- GDPR: Provide explainability for AI-driven decisions; allow patients to request data deletion or modification.
+- FDA: Document model validation procedures and risk mitigation strategies.
+
+**3. AI Governance Roadmap**
+- Establish an AI oversight board including legal, data science, and compliance reps.
+- Define criteria for acceptable model performance thresholds and fail-safe protocols.
+- Introduce quarterly audits of training datasets for bias, drift, and labeling errors.
+
+**4. Data Pipeline Integrity**
+- Improve version control for datasets using DVC and Git-based tracking.
+- Automate annotation quality assurance using inter-rater agreement metrics.
+- Enforce data provenance tagging for every training record.
+
+**5. Risk & Mitigation**
+- Document fallback procedures in case of model output uncertainty (e.g., manual escalation).
+- Perform simulations to assess patient outcomes based on different model decisions.
+- Implement alerts for anomalies in live model predictions or input patterns.
+
+**6. Tech Stack Alignment**
+- Use AWS S3 for secure dataset storage with fine-grained IAM policies.
+- MLflow for tracking experiments and model lifecycle stages.
+- Azure Sentinel integration for centralized threat monitoring of AI pipelines.
+
+**7. Action Items**
+- Draft internal AI use policy (Legal + Data Science).
+- Schedule dataset audit (Compliance).
+- Launch internal training for doctors on AI interpretability (Training Dept).
+
+**8. Next Meeting**
+Scheduled for June 3rd to review policy drafts and validate audit tooling.

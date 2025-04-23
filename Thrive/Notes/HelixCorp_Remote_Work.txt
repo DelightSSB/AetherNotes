@@ -1,0 +1,30 @@
+**HelixCorp Remote Work Enablement Plan**
+
+**1. Overview**
+HelixCorp is transitioning to a flexible hybrid work model. This initiative includes provisioning secure devices, deploying collaboration platforms, and ensuring robust remote access security. The plan enables employees to work from anywhere while maintaining productivity and data integrity.
+
+**2. Device Provisioning**
+- Standardize hardware specifications for remote workers.
+- Use Mobile Device Management (MDM) for tracking and compliance.
+- Offer self-service IT support portals for remote troubleshooting.
+
+**3. Collaboration Tools**
+- Roll out Microsoft Teams and SharePoint for document collaboration.
+- Integrate calendars and messaging with Outlook and Exchange.
+- Provide training sessions for tool adoption.
+
+**4. Secure Access Measures**
+- Deploy company-wide VPN for encrypted traffic.
+- Enforce Zero Trust policies on remote logins.
+- Implement endpoint detection and response (EDR) software.
+
+**5. Employee Support**
+- Create dedicated remote IT support teams.
+- Conduct monthly check-ins on remote workstation health.
+- Launch feedback forms to monitor remote work experience.
+
+**6. Rollout Phases**
+**Phase 1:** Inventory and device prep.
+**Phase 2:** Collaboration software deployment.
+**Phase 3:** Security rollout and testing.
+**Phase 4:** Go-live and feedback collection.
