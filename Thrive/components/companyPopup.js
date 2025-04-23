@@ -1,24 +1,27 @@
-import React from "react";
+import {React, useEffect} from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, TextInput, Picker } from 'react-native';
 import styles from "../styles";
 
 
-export default function CompanyPopup ({companyName, setCompanyName, handleCompanySubmit, title, setTitle, handleCloseModal }){
-    return(
+export default function CompanyPopup ({companyName, setCompanyName, handleCompanySubmit, title, setTitle, handleCloseModal, curTitle}){
+  useEffect(() => {
+    setTitle(curTitle);
+  }, [curTitle]);
+  return(
         <View style={companyPopup.modalOverlay}>
           <View style={companyPopup.modalBox}>
             <TouchableOpacity style={companyPopup.closeButton} onPress={handleCloseModal}>
               <Text style={companyPopup.closeButtonText}>X</Text>
             </TouchableOpacity>
-            <Text style={companyPopup.modalTitle}>Enter a title for these notes</Text>
+            {/* <Text style={companyPopup.modalTitle}>Enter a title for these notes</Text> */}
             <TextInput
             blurOnSubmit={false}
-            style={companyPopup.titleInput}
+            style={companyPopup.picker}
             placeholder="Enter Title"
             value={title}
             onChangeText={(val) => setTitle(val)}
             />
-            <Text style={companyPopup.modalTitle}>What is your company?</Text>
+            {/* <Text style={companyPopup.modalTitle}>What is your company?</Text> */}
             <Picker
     selectedValue={companyName}
     style={companyPopup.picker}
@@ -37,22 +40,41 @@ export default function CompanyPopup ({companyName, setCompanyName, handleCompan
     )
 }
 
-export function ChangeTitlePopup ({handleChangeTitle, title, setTitle, closeTitleChange }){
+export function ChangeTitlePopup ({handleChangeTitle, title, setTitle, closeTitleChange, curTitle}){
+  useEffect(() => {
+    setTitle(curTitle);
+  }, [curTitle]);
   return(
       <View style={companyPopup.modalOverlay}>
         <View style={companyPopup.modalBox}>
           <TouchableOpacity style={companyPopup.closeButton} onPress={closeTitleChange}>
             <Text style={companyPopup.closeButtonText}>X</Text>
           </TouchableOpacity>
-          <Text style={companyPopup.modalTitle}>Enter a title for these notes</Text>
+          {/* <Text style={companyPopup.modalTitle}>Enter a title for these notes</Text> */}
           <TextInput
           blurOnSubmit={false}
-          style={companyPopup.titleInput}
+          style={companyPopup.picker}
           placeholder="Enter Title"
           value={title}
           onChangeText={(val) => setTitle(val)}
           />
           <TouchableOpacity style={companyPopup.modalButton} onPress={handleChangeTitle}>
+            <Text style={companyPopup.modalButtonText}>Confirm</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+  )
+}
+
+export function ConfirmDelete ({setDeleteModal, curTitle, ID, deleteChat}){
+  return(
+    <View style={companyPopup.modalOverlay}>
+        <View style={companyPopup.modalBox}>
+          <TouchableOpacity style={companyPopup.closeButton} onPress={() => setDeleteModal(false)}>
+            <Text style={companyPopup.closeButtonText}>X</Text>
+          </TouchableOpacity>
+          <Text style={companyPopup.modalTitle}>Delete {curTitle}?</Text>
+          <TouchableOpacity style={companyPopup.modalButton} onPress={() => {deleteChat(ID); setDeleteModal(false)}}>
             <Text style={companyPopup.modalButtonText}>Confirm</Text>
           </TouchableOpacity>
         </View>
@@ -126,6 +148,7 @@ const companyPopup = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333', 
     fontFamily: styles.fontFamily, 
+    margin: 20,
   },
   titleInput: {
     borderRadius: 10,
@@ -134,6 +157,7 @@ const companyPopup = StyleSheet.create({
     fontSize: 10,
     fontFamily: styles.fontFamily,
     padding: 10,
+    paddingBottom : 15,
 },
   closeButton: {
     position: 'absolute',
