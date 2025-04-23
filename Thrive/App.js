@@ -195,6 +195,7 @@ export default function App() {
           chat.id === activeChatId
             ? {
                 ...chat,
+                title: title,
                 chatMessages: [...chat.chatMessages, { sender: "ai", message: aiResponse }]
               }
             : chat
@@ -324,24 +325,24 @@ export default function App() {
   //upload after company name is submitted
   const handleCompanySubmit = async () => {
     setCompanyModalVisible(false);
-    if (title.trim()){
-    let updatedHistory = [];
-    if(newChatView==null){
-      const newChat = customChat(title);
-    }else{
-    updatedHistory = chatHistory.map(chat =>
-      chat.id === activeChatId
-        ? {
-            ...chat,
-            title: title
-          }
-        : chat
-    );
-    setChatHistory(updatedHistory);
-    saveChats(updatedHistory);
-  }
-  setTitle("");
-}
+//     if (title.trim()){
+//     let updatedHistory = [];
+//     if(newChatView==null){
+//       const newChat = customChat(title);
+//     }else{
+//     updatedHistory = chatHistory.map(chat =>
+//       chat.id === activeChatId
+//         ? {
+//             ...chat,
+//             title: title
+//           }
+//         : chat
+//     );
+//     setChatHistory(updatedHistory);
+//     saveChats(updatedHistory);
+//   }
+//   setTitle("");
+// }
     try {
       const doc = await DocumentPicker.getDocumentAsync({
         type: ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'],
