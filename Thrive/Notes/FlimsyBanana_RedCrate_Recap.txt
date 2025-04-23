@@ -1,0 +1,28 @@
+**Business Trip Recap – FlimsyBanana Corp. + RedCrate Logistics**
+
+**Date:** April 2, 2025  
+**Employee:** Jamal Ortiz, Director of Operations  
+**Meeting With:** RedCrate Logistics Strategy Team  
+**Topic:** 3-Year Fulfillment Contract Negotiation
+
+**Summary:**
+Jamal traveled to RedCrate’s Charlotte HQ to negotiate updated terms for fulfillment services covering our plush banana inventory. Our current contract expires in August. RedCrate is proposing rate increases due to rising fuel and labor costs.
+
+**Major Takeaways:**
+- New proposed rates: +7% on per-package rate, +4% on storage fees.
+- RedCrate offered same-day handling SLAs for top-tier items.
+- FlimsyBanana requested more visibility into inventory tracking, to be added via API.
+- Discussed option for localized pop-up distribution centers near state fairs.
+
+**Points of Concern:**
+- Increased costs will cut into Q4 margin projections unless offset by higher volume.
+- RedCrate wants a 36-month commitment; Jamal countered with 18-month w/ renewal clause.
+- Legal flagged a vague indemnity clause — needs revision.
+
+**Next Actions:**
+- RedCrate to revise contract and resend by April 8.
+- Finance to model costs under new rate structure.
+- Jamal to draft executive summary for board review.
+
+**Internal Thoughts:**
+RedCrate still values the partnership and seems willing to negotiate, but we need to maintain leverage by exploring at least one backup logistics provider before committing.

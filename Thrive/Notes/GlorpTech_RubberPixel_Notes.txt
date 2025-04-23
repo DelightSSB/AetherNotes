@@ -1,0 +1,28 @@
+**Meeting Notes – GlorpTech Unlimited + RubberPixel Studios**
+
+**Date:** March 29, 2025  
+**Attendee (GlorpTech):** Lila Navarro, Creative Director  
+**Company Met:** RubberPixel Studios  
+**Purpose:** Cross-studio collaboration for AR mobile campaign
+
+**Summary:**
+Lila met with RubberPixel’s concept and animation teams to discuss co-developing an interactive AR scavenger hunt app for a summer retail launch. RubberPixel is known for their stylized characters and wanted assurance that our asset pipeline could handle high-res models and motion capture workflows.
+
+**Discussion Points:**
+- Suggested using Unity with AR Foundation and Vuforia.
+- Agreement reached on 60/40 revenue split favoring GlorpTech (we’ll handle publishing & backend).
+- RubberPixel’s assets will require retopology and compression tuning for mobile optimization.
+- Collaboration will use GitHub Actions + Trello for coordination.
+
+**Risks Identified:**
+- Tight deadline: Want to launch by June 1st.
+- GlorpTech lacks in-house QA team — may need to contract testing externally.
+- AR SDK license still pending renewal.
+
+**Next Steps:**
+- RubberPixel to submit initial concept sketches by April 2.
+- Lila to finalize in-app store integration mockups.
+- Weekly syncs every Thursday at 2 PM EST.
+
+**Internal Note:**
+RubberPixel’s work is solid, but we should watch their scope creep. Recommend setting feature freeze by May 10.
