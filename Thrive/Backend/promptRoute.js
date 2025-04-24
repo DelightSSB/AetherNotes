@@ -7,35 +7,25 @@ require("dotenv").config({ path: "./config-2.env" });
 const promptRoute = express.Router();
 
 promptRoute.route("/prompt").post(async (req, res) => {
-  const  userPrompt = req.body.message;
+  console.log(req.body.docs)
+  const userPrompt = req.body.prompt.message;
+  const context = req.body.docs;
   const apiUrl = "https://thrive-openai.openai.azure.com/openai/deployments/gpt-35-turbo/chat/completions?api-version=2024-02-01";
 
+  console.log(context)
+  console.log(userPrompt)
   const headers = {
     "Content-Type": "application/json",
     "api-key": process.env.THRIVE_API_KEY,
   };
 
-//   try {
-//     const db = await database.getDB();
-//     const docs = await db
-//       .collection("documents")
-//       .find({ company })
-//       .sort({ date: -1 }) // optional: prioritize recent
-//       .limit(50) // avoid pulling hundreds of docs
-//       .toArray();
-
-//     if (!docs.length) {
-//       return res.status(404).json({ error: `No documents found for company: ${company}` });
-    // }
-
-    // const context = buildContextFromDocuments(docs);
 
     const prompt = `
-You are an AI assistant for the company trying to help users with questions.
-
-
+You are an AI assistant for the company trying to help users with questions. The question will be on the first with the heading User Question and then the rest will be followed by the context under Context:.
 
 User Question: ${userPrompt}
+
+Context: ${context}
     `.trim();
 
     const data = {
@@ -50,6 +40,8 @@ User Question: ${userPrompt}
       max_tokens: 800,
       stop: null,
     };
+
+    console.log(data)
 
     const aiResponse = await axios.post(apiUrl, data, { headers });
     res.json(aiResponse.data);

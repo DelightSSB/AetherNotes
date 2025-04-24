@@ -1,30 +1,36 @@
 # Thrive
-Capstone 2025 Project for Thrive
+# Capstone 2025 Project for Thrive
 Thrive is a tech company that gives it services, cybersecurity help and cloud computing and networking. 
 They partnered with our school to give us a project that will help them communicate with their clients easier
 
-Project Thrive (Name tbd):
-Thrive wants a web ui site that will access the notes and meetings that they have with clients and summarize them for easy access in the future
+## Project Thrive AetherNotes:
+This is a web app that is to be used by Thrive. This application is to take notes that are about the various clients and then provide a summary of those notes. Then a user will be able to prompt the AI about the information given about a specific company. All of the notes are stored in a MongoDB database.
 
-Features: 
+### Features:
+- User should be able to upload notes to the AI to have them be summarized and stored.
+- User should be able to prompt the AI further about the company to get more information from other notes provieded.
+- Each chat should have their own ID that should be recognizable and changable by the user.
 
-- Should show the accounts of who is involved in the meeting and the logging of the notes
-  - Security will be handled by Thrive themselves unless restated or redesigned later. No need for different protocols for different security accesses.
-- Each meeting should have their own ID meeting that should be recognizable and potentially searchable for later use.
-- Each meeting should include the date of the meeting and the main subject talked about to include an overview
-- The use of an ai summary that will summarize a given text from the employer (or potentially later from an automatically uploaded transcript, that's a stretch goal)
 
-Stretch Goals:
-- Migration of data to Snowflake cloud database
-- Authentication with Kinde (For all employees or different employee levels?)
-- Salesforce and ServiceNow push of data to API
-- Integration with OneNote
 
-With how the project is now (At the time of April 14th, 2025) you need to run
-npx expo install expo-app-loading  
-and
-npx expo install @expo-google-fonts/exo-2 expo-font
-in order to load the custom font for the logo.
+## To run the project use the following commands and information.
+Note: All API keys for the LLM, and URI for the database is kept in a environment file. For the project to work on the backend you must provide your own keys in a file called 'config-2.env' and then have this file within the /Backend directory. './Backend/config-2.env'
+
+1. Ensure you have npm and Node.js installed on your device. 
+
+2. Open two seperate terminals. One will be used to run the front end of the application and then the second will be used to run the backend through node.js.
+
+3. On your first terminal you should make sure you are in the main directory and run the 'npm install' to install all the necessary packages for the project. 
+
+4. Once it finishing installing go ahead and run 'npm start' to start the React frontend. 
+
+5. Once it start booting, navigate to your second terminal and then use 'cd Backend' to navigate to the Backend directory. 
+
+6. Once there run 'node server.js' to start the backend. 
+
+To know it all is running correct you should see on the terminal with the frontend a qr code and a link to the localhost webserver and the second terminal should say 'Server running on port 3000'
+
+
 
 
 
