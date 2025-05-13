@@ -1,9 +1,8 @@
-# Thrive
+# AetherNotes
 # Capstone 2025 Project for Thrive
 Thrive is a tech company that gives it services, cybersecurity help and cloud computing and networking. 
 They partnered with our school to give us a project that will help them communicate with their clients easier
 
-## Project Thrive AetherNotes:
 This is a web app that is to be used by Thrive. This application is to take notes that are about the various clients and then provide a summary of those notes. Then a user will be able to prompt the AI about the information given about a specific company. All of the notes are stored in a MongoDB database.
 
 ### Features:
