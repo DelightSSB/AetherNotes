@@ -29,7 +29,7 @@ Note: All API keys for the LLM, and URI for the database is kept in a environmen
 
 To know it all is running correct you should see on the terminal with the frontend a qr code and a link to the localhost webserver and the second terminal should say 'Server running on port 3000'
 
-## Deployment throug Vercel: aether-notes-72z4pcpit-delightssbs-projects.vercel.app
+## Deployment through Vercel: aether-notes-72z4pcpit-delightssbs-projects.vercel.app
 
 
 
