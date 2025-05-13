@@ -1,0 +1,27 @@
+**Meeting Summary – ChonkyCloud Inc. + ByteWrangler Systems**
+
+**Date:** April 10, 2025  
+**Attendee (ChonkyCloud):** Marcus Fenn, Sr. Integration Engineer  
+**Company Met:** ByteWrangler Systems  
+**Topic:** API Integration Partnership for Data Sync
+
+**Overview:**
+The meeting focused on the feasibility of integrating ByteWrangler’s real-time telemetry feed into ChonkyCloud’s FluffSync platform. ByteWrangler is seeking a long-term partner to offer cloud-based redundancy for their edge devices.
+
+**Key Discussion Points:**
+- ByteWrangler systems emit over 6TB of telemetry daily; ChonkyCloud would need to provide scalable ingestion pipelines.
+- Agreed on RESTful API protocol with OAuth 2.0 authentication.
+- ByteWrangler wants a co-branded dashboard for mutual clients.
+- Concerns raised over latency during batch data consolidation. Proposed use of Kafka buffers.
+
+**Decisions Made:**
+- Pilot integration to begin in May, focused on one data region (US-East).
+- ChonkyCloud to draft a technical scope and initial resource forecast by April 18.
+
+**Action Items:**
+- Marcus to coordinate with DevOps on PoC architecture.
+- ByteWrangler to send over schema documentation and rate limits.
+- Joint follow-up scheduled for April 24.
+
+**Marcus’s Comments:**
+ByteWrangler’s CTO seems highly motivated and is already familiar with our containerized ingestion engine. This partnership could also open the door to direct sales leads from their manufacturing vertical.
