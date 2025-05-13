@@ -50,6 +50,9 @@ export default function App() {
   //View for new chat
   const [newChatView, setNewChatView] = useState(null);
 
+  // state for summaryRoute
+  const [uploadDocs, setUploadDocs] = useState([]);
+
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
   };
@@ -170,7 +173,7 @@ export default function App() {
   const summaryReturn = async (text) => {
     try {
         const response = await axios.post("http://localhost:3000/summary", {
-            text: text 
+            text: text
         });
 
         let updatedHistory = [];
@@ -265,9 +268,16 @@ export default function App() {
     // Optionally clear the input right away
     setTextInput("");
     textInputRef.current?.focus();
+
+    const upload = {
+      docs: uploadDocs,
+      prompt: newMessage,
+    }
+
+    console.log(upload);
   
     try {
-      const response = await axios.post("http://localhost:3000/prompt", newMessage);
+      const response = await axios.post("http://localhost:3000/prompt", upload);
       const aiResponse = {
         sender: "ai",
         message: response.data.choices[0].message.content,
@@ -389,22 +399,31 @@ export default function App() {
               console.error("Error extracting text:", error);
               return null;
             }
-            break;
-          
+            break;          
       }
-
-      const uploadDoc = {
+      
+      const newDoc = {
         id: 10, 
         title: file.name,
         client: companyName,
         date: new Date().toLocaleString(),
         notes: cleanText,
       };
-      console.log(uploadDoc)
+
+      console.log(newDoc)
+      const contextdoc = newDoc.notes;
+      const addNewEntry = (contextdoc) => {
+        setUploadDocs((uploadDocs) => [...uploadDocs, contextdoc]);
+      };
+
+      addNewEntry(contextdoc)
+
+      console.log(uploadDocs)
+      
 
       summaryReturn(cleanText)
       // send the document to the backend
-      await axios.post("http://localhost:3000/upload", uploadDoc);
+      await axios.post("http://localhost:3000/upload", newDoc);
 
       alert('File uploaded successfully!');
       setCompanyName(''); //reset company after submission
